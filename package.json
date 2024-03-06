@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.10.2",
     "@supabase/auth-helpers-nextjs": "^0.9.0",
     "@supabase/supabase-js": "^2.39.7",
     "next": "13.5.4",
     "next-auth": "^4.23.2",
+    "prisma": "^5.10.2",
     "react": "^18",
     "react-dom": "^18"
   },
