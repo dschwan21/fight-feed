@@ -9,24 +9,23 @@ export default async function Home() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-
-  const prisma = new PrismaClient()
-
-  console.log('users', users)
   async function handler(req, res) {
   const users = await prisma.User.findMany();
   res.json(users);
 }
+  const prisma = new PrismaClient()
+
+  // console.log('users', users)
   return (
     <>
       {session ? (
         <div>
           <UserCard user={session?.user} pagetype={"Home"} />
-          <ul>
+          {/* <ul>
             {users?.map((user, index) => (
               <li key={index}>{user.username}</li>
             ))}
-          </ul>
+          </ul> */}
         </div>
       ) : (
         <h1 className="text-5xl">You Shall Not Pass!</h1>
