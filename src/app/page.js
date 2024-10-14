@@ -11,11 +11,12 @@ export default async function Home() {
 
   async function handler(req, res) {
   const users = await prisma.User.findMany();
+  console.log('users', users)
   res.json(users);
 }
   const prisma = new PrismaClient()
 
-  // console.log('users', users)
+  handler()
   return (
     <>
       {session ? (
