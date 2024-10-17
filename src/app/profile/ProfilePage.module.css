@@ -1,0 +1,108 @@
+.profileContainer {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .profileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+  }
+  
+  .profilePicture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .profileInfo {
+    flex-grow: 1;
+    padding-left: 20px;
+  }
+  
+  .profileTitle {
+    font-size: 1rem;
+    color: #ddd;
+  }
+  
+  .settingsIcon {
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .actionButtons {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  
+  .followButton {
+    background-color: #6a11cb;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .messageButton {
+    background-color: #ddd;
+    padding: 10px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .statsSection {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+  }
+  
+  .stat {
+    text-align: center;
+  }
+  
+  .bioSection {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+  
+  .bioText{
+    color: black;
+    font-size: 1.2rem;
+  }
+  .interestsSection {
+    margin: 20px 0;
+  }
+  
+  .interestsList {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+  }
+  
+  .interestItem {
+    text-align: center;
+    min-width: 120px;
+  }
+  
+  .interestImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .interestsCount {
+    color: #6a11cb;
+  }
+  

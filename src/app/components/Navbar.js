@@ -9,7 +9,7 @@ export default function Navbar() {
                 <li><Link href="/api/auth/signout">Sign Out</Link></li>
                 <li><Link href="/server">Server</Link></li>
                 <li><Link href="/client">Client</Link></li>
-                <li><Link href="/extra">Extra</Link></li>
+                <li><Link href="/profile">Profile</Link></li>
             </ul>
         </nav>
     )
