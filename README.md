@@ -1,4 +1,4 @@
-## Greenfield Project Starter
+## Fight Feed
 
 ## Overview
 This Greenfield Project Starter is a versatile, scalable Next.js template designed to jumpstart the development of a variety of web applications. Whether you're building a SaaS platform, a community forum, or any full-stack application, this starter kit provides the essential groundwork, focusing on authentication, basic architecture, and the flexibility to adapt to numerous ideas and requirements.
