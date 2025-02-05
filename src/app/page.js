@@ -1,8 +1,8 @@
 import { options } from "./api/auth/[...nextauth]/options"
 import { getServerSession } from "next-auth/next"
-import { createClient } from "@supabase/supabase-js"
 import UserCard from "./components/UserCard"
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "prisma"
+import { useRouter } from "next/navigation"
 
 export default async function Home() {
   const session = await getServerSession(options)
@@ -14,7 +14,6 @@ export default async function Home() {
   console.log('users', users)
   res.json(users);
 }
-  const prisma = new PrismaClient()
 
   handler()
   return (
