@@ -1,70 +1,67 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Onboarding() {
-  const { data: session, status } = useSession();
+  const { data: session, update } = useSession();
   const router = useRouter();
   const [username, setUsername] = useState("");
-
-  // Redirect to home if user already exists
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.id) {
-      router.push("/");  // If user is authenticated and exists, go to home
-    } else if (status === "unauthenticated") {
-      router.push("/api/auth/signin");  // Redirect to sign-in if not authenticated
-    }
-  }, [status, session, router]);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!session || !session.user) {
-      console.error("User session not available.");
+    if (!username.trim()) {
+      setError("Username cannot be empty");
       return;
     }
 
-    const response = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: session.user.email,
-        username,
-      }),
-    });
+    try {
+      const response = await fetch(`/api/users/${session?.user?.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
 
-    if (response.ok) {
-      router.push("/");  // Redirect to home after successful onboarding
-    } else {
-      console.error("Failed to onboard user.");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update username");
+      }
+
+      console.log("✅ Username successfully updated");
+
+      // Refresh session to remove newUser flag
+      await update();
+      router.push("/");
+    } catch (err) {
+      console.error("❌ Error submitting username:", err);
+      setError(err.message || "Error updating username");
     }
   };
 
-  if (status === "loading") {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <h1 className="text-3xl font-bold">Complete Your Profile</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-2xl font-bold">Welcome! Set Your Username</h1>
+      <form onSubmit={handleSubmit} className="mt-4">
         <input
           type="text"
-          placeholder="Choose a username"
+          placeholder="Enter your username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="border border-gray-300 bg-white text-gray-900 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          required
+          className="border border-gray-300 p-2 rounded-md"
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          className="ml-2 p-2 bg-blue-500 text-white rounded-md"
         >
-          Complete Onboarding
+          Submit
         </button>
       </form>
+      {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );
 }
