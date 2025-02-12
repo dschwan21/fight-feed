@@ -1,13 +1,22 @@
-'use client'
+"use client";
 
-// this is only necessary for the client components because the server components are already wrapped in a session provider
+import { SessionProvider } from "next-auth/react";
+import { createContext, useState, useContext } from "react";
 
-import { SessionProvider } from 'next-auth/react'
+// 🔄 Create authentication context
+const AuthContext = createContext();
 
-export default function AuthProvider({ children }) {
-    return (
-        <SessionProvider>
-            {children}
-        </SessionProvider>
-    )
+export function AuthProvider({ children }) {
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticating, setIsAuthenticating }}>
+      <SessionProvider>{children}</SessionProvider>
+    </AuthContext.Provider>
+  );
+}
+
+// 🔄 Hook to access global authentication state
+export function useAuth() {
+  return useContext(AuthContext);
 }
