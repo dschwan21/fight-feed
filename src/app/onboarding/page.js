@@ -34,9 +34,10 @@ export default function Onboarding() {
 
       console.log("✅ Username successfully updated");
 
-      // Refresh session to remove newUser flag
-      await update();
-      router.push("/");
+      // 🔄 **Force session refresh to clear `newUser`**
+      await update({ user: { ...session.user, newUser: false } });
+
+      router.replace("/");
     } catch (err) {
       console.error("❌ Error submitting username:", err);
       setError(err.message || "Error updating username");

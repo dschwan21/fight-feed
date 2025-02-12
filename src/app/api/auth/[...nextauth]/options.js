@@ -35,9 +35,13 @@ export const options = {
             return false;
           }
       
+          console.log("🔍 Checking if user exists in DB...");
+      
           let existingUser = await prisma.user.findUnique({
             where: { email: user.email },
           });
+      
+          let newUser = false;
       
           if (!existingUser) {
             console.log("🆕 New user detected, creating in database...");
@@ -51,10 +55,18 @@ export const options = {
             });
       
             console.log("✅ New user created:", existingUser);
+            newUser = true;
           }
       
           console.log("✅ User found, proceeding.");
-          return true;
+      
+          return {
+            id: existingUser.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            newUser: newUser, // **Set `newUser` properly**
+          };
         } catch (error) {
           console.error("❌ Error during sign-in:", error);
           return false;
