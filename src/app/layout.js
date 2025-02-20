@@ -35,25 +35,30 @@ function AuthRedirectHandler() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticating } = useAuth(); // ✅ Now it works inside AuthProvider
-  const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticating } = useAuth();
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
-    if (status === "loading") return;
+    if (status === "loading" || hasRedirected) return;
 
     if (status === "authenticated") {
       if (session?.user?.newUser && pathname !== "/onboarding") {
         console.log("🚀 Redirecting to onboarding...");
+        setHasRedirected(true);
         router.replace("/onboarding");
-      } else {
-        setIsLoading(false);
+      } else if (!session?.user?.newUser && pathname === "/onboarding") {
+        console.log("✅ Redirecting to home...");
+        setHasRedirected(true);
+        router.replace("/");
       }
-    } else {
-      setIsLoading(false);
+    } else if (status === "unauthenticated" && pathname !== "/") {
+      console.log("❌ User signed out, redirecting home...");
+      setHasRedirected(true);
+      router.replace("/");
     }
-  }, [status, session, router, pathname]);
+  }, [status, session?.user?.newUser, pathname, router, hasRedirected]);
 
-  if (isLoading || isAuthenticating) {
+  if (isAuthenticating) {
     return <LoadingScreen />;
   }
 

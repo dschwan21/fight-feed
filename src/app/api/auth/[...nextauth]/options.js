@@ -21,6 +21,9 @@ export const options = {
       }
     })
   ],
+  session: {
+    strategy: "jwt",
+  },
 
   callbacks: {
     /**
@@ -96,31 +99,33 @@ export const options = {
      */
     async session({ session }) {
         if (!session.user || !session.user.email) {
-          console.error("❌ Session error: No user email found.");
-          return session;
-        }
-      
-        try {
-          let dbUser = await prisma.user.findUnique({
-            where: { email: session.user.email },
-          });
-      
-          if (!dbUser) {
-            console.warn("⚠️ No database user found in session.");
+            console.error("❌ Session error: No user email found.");
             return session;
-          }
-      
-          // **Force newUser to be true if it's a new account**
-          session.user.id = dbUser.id;
-          session.user.newUser = dbUser.username === null || dbUser.username.trim() === "";
-      
-          console.log("✅ Updated session user:", session.user);
-          return session;
-        } catch (error) {
-          console.error("❌ Error in session callback:", error);
-          return session;
         }
-      }
+    
+        try {
+            let dbUser = await prisma.user.findUnique({
+                where: { email: session.user.email },
+                include: { profile: true }
+            });
+    
+            if (!dbUser) {
+                console.warn("⚠️ No database user found in session.");
+                return session;
+            }
+    
+            session.user.id = dbUser.id; // ✅ Ensure user ID is attached
+            session.user.newUser = !dbUser.username;
+            session.user.bio = dbUser.profile?.bio || "";
+            session.user.location = dbUser.profile?.location || "";
+    
+            console.log("✅ Updated session user:", session.user);
+            return session;
+        } catch (error) {
+            console.error("❌ Error in session callback:", error);
+            return session;
+        }
+    }
   },
 
   debug: true,  // Enable debugging logs for troubleshooting
