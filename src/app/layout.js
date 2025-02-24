@@ -36,27 +36,31 @@ function AuthRedirectHandler() {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticating } = useAuth();
-  const [hasRedirected, setHasRedirected] = useState(false);
+  const [redirected, setRedirected] = useState(false);
 
   useEffect(() => {
-    if (status === "loading" || hasRedirected) return;
+    if (status === "loading" || redirected) return;
+
+    let targetPath = null;
 
     if (status === "authenticated") {
       if (session?.user?.newUser && pathname !== "/onboarding") {
         console.log("🚀 Redirecting to onboarding...");
-        setHasRedirected(true);
-        router.replace("/onboarding");
+        targetPath = "/onboarding";
       } else if (!session?.user?.newUser && pathname === "/onboarding") {
         console.log("✅ Redirecting to home...");
-        setHasRedirected(true);
-        router.replace("/");
+        targetPath = "/";
       }
     } else if (status === "unauthenticated" && pathname !== "/") {
       console.log("❌ User signed out, redirecting home...");
-      setHasRedirected(true);
-      router.replace("/");
+      targetPath = "/";
     }
-  }, [status, session?.user?.newUser, pathname, router, hasRedirected]);
+
+    if (targetPath) {
+      setRedirected(true); // ✅ Prevents multiple redirects
+      router.replace(targetPath);
+    }
+  }, [status, session?.user?.newUser, pathname, router]);
 
   if (isAuthenticating) {
     return <LoadingScreen />;
