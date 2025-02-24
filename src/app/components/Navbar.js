@@ -16,29 +16,27 @@ export default function Navbar() {
           FightFeed
         </Link>
 
-        {/* 🌐 Desktop Navigation (Hidden on Mobile) */}
+        {/* 🌐 Desktop Navigation */}
         <div className="hidden md:flex space-x-8 font-semibold text-textDark">
           <Link href="/scorecards" className="hover:text-primary transition">Scorecards</Link>
           <Link href="/events" className="hover:text-primary transition">Events</Link>
           <Link href="/community" className="hover:text-primary transition">Community</Link>
-          {session?.user && (
-            <Link href="/profile" className="hover:text-primary transition">Profile</Link>
-          )}
+          {session?.user && <Link href="/profile" className="hover:text-primary transition">Profile</Link>}
         </div>
 
-        {/* 👤 User Dropdown / Sign In Button */}
+        {/* 👤 User Options (Desktop) */}
         {session?.user ? (
-          <div className="relative">
-            <button
-              className="hidden md:flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-custom hover:bg-opacity-90 transition"
-              onClick={() => signOut()}
-            >
-              <img src={session.user.image || "/default-avatar.png"} alt="Avatar" className="w-8 h-8 rounded-full border" />
-              <span>{session.user.username || "User"}</span>
-            </button>
-          </div>
+          <button
+            onClick={() => signOut()}
+            className="hidden md:block bg-primary text-white px-6 py-2 rounded-custom font-semibold hover:bg-opacity-90 transition"
+          >
+            Sign Out
+          </button>
         ) : (
-          <button onClick={() => signIn()} className="hidden md:block bg-secondary text-white px-6 py-2 rounded-custom font-semibold hover:bg-opacity-90 transition">
+          <button
+            onClick={() => signIn()}
+            className="hidden md:block bg-secondary text-white px-6 py-2 rounded-custom font-semibold hover:bg-opacity-90 transition"
+          >
             Sign In
           </button>
         )}
@@ -57,12 +55,10 @@ export default function Navbar() {
             <Link href="/events" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Events</Link>
             <Link href="/community" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Community</Link>
             
-            {/* 👤 Profile Link */}
-            {session?.user && (
-              <Link href="/profile" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Profile</Link>
-            )}
+            {/* 👤 Profile Link (Mobile) */}
+            {session?.user && <Link href="/profile" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Profile</Link>}
 
-            {/* 👤 User Options */}
+            {/* 👤 User Options (Mobile) */}
             {session?.user ? (
               <button onClick={() => signOut()} className="bg-primary text-white px-6 py-2 rounded-custom font-semibold hover:bg-opacity-90 transition">
                 Sign Out
