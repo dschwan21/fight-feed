@@ -2,26 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
+/* 🎨 Global Styles */
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  @apply bg-background text-textDark font-sans;
+}
+
+/* ✅ Page Container */
+.page-container {
+  @apply max-w-4xl mx-auto p-6;
+}
+
+/* ✅ Heading Styles */
+h1, h2, h3 {
+  @apply font-retro text-primary;
+}
+
+h1 {
+  @apply text-4xl font-bold;
+}
+
+h2 {
+  @apply text-3xl font-semibold;
+}
+
+h3 {
+  @apply text-2xl;
+}
+
+/* ✅ Buttons */
+.btn-primary {
+  @apply bg-primary text-white px-6 py-2 rounded-custom font-bold hover:bg-opacity-90 transition;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-white px-6 py-2 rounded-custom font-bold hover:bg-opacity-90 transition;
+}
+
+/* ✅ Card Style */
+.card {
+  @apply border border-gray-300 rounded-custom p-4 shadow-md bg-white;
+}
+
+/* Navbar Styles */
+nav {
+  @apply bg-background border-b border-gray-300 shadow-md fixed top-0 left-0 w-full z-50;
+}
+
+nav a {
+  @apply text-textDark font-semibold transition-all;
+}
+
+nav a:hover {
+  @apply text-primary;
+}
+
+/* Dropdown */
+.dropdown-menu {
+  @apply absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-custom shadow-lg;
 }

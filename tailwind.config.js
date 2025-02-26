@@ -7,12 +7,22 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      colors: {
+        primary: "#1E40AF", // Deep Blue (Scorecard)
+        secondary: "#E11D48", // Red (Scorecard)
+        background: "#FDF6EC", // Retro Beige (Background)
+        accent: "#C084FC", // Purple Accent
+        textDark: "#1E293B", // Deep Gray-Blue
+        textLight: "#E5E7EB", // Light Gray
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        retro: ['Courier New', 'monospace'],
+      },
+      borderRadius: {
+        custom: "12px",
       },
     },
   },
   plugins: [],
-}
+};
