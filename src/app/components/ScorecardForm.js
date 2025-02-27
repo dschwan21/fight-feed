@@ -119,53 +119,87 @@ export default function ScorecardForm({ fight, existingScorecard = null }) {
   };
 
   if (!fight || !fight.fighter1?.name || !fight.fighter2?.name) {
-    return <div className="p-4 bg-gray-50 rounded-lg">Loading fight data...</div>;
+    return <div className="p-4 bg-cream rounded-lg border border-gray-300 font-serif">Loading fight data...</div>;
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="bg-black text-white p-4">
-        <h2 className="text-xl font-bold text-center uppercase tracking-wider mb-2">
+    <div className="bg-cream rounded-lg shadow-md overflow-hidden border border-gray-300 my-6">
+      <div className="p-4 bg-cream">
+        <h2 className="text-xl font-bold text-center uppercase tracking-wider mb-4 font-serif">
           {existingScorecard ? "Edit Scorecard" : "Create Scorecard"}
         </h2>
         
-        <div className="text-center mb-1">
-          <h3 className="font-bold tracking-wider uppercase">
+        <div className="text-center mb-3">
+          <h3 className="font-bold tracking-wider uppercase font-serif">
             {fight.fighter1.name} vs {fight.fighter2.name}
           </h3>
-          <p className="text-sm text-gray-400">{fight.eventName} • {new Date(fight.date).toLocaleDateString()}</p>
+          <p className="text-sm text-gray-600 font-serif">{fight.eventName} • {new Date(fight.date).toLocaleDateString()}</p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="p-5">
+      {/* Boxers Header Cards */}
+      <div className="flex">
+        {/* Fighter 1 Header - Blue Side */}
+        <div className="w-1/2 border-r border-gray-300">
+          <div className="text-center p-2 bg-blue-800 text-white border-b border-gray-300 font-serif">
+            <h3 className="font-bold">{fight.fighter1.name}</h3>
+          </div>
+          <div className="bg-blue-700 h-32 flex items-center justify-center">
+            {fight.fighter1.imageUrl ? (
+              <img 
+                src={fight.fighter1.imageUrl} 
+                alt={fight.fighter1.name}
+                className="h-full object-cover"
+              />
+            ) : (
+              <div className="text-white font-bold text-2xl font-serif">Blue Corner</div>
+            )}
+          </div>
+        </div>
+        
+        {/* Fighter 2 Header - Red Side */}
+        <div className="w-1/2">
+          <div className="text-center p-2 bg-red-800 text-white border-b border-gray-300 font-serif">
+            <h3 className="font-bold">{fight.fighter2.name}</h3>
+          </div>
+          <div className="bg-red-700 h-32 flex items-center justify-center">
+            {fight.fighter2.imageUrl ? (
+              <img 
+                src={fight.fighter2.imageUrl} 
+                alt={fight.fighter2.name}
+                className="h-full object-cover"
+              />
+            ) : (
+              <div className="text-white font-bold text-2xl font-serif">Red Corner</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="p-5 bg-cream">
         <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4 px-2">Round-by-Round Scoring</h3>
+          <h3 className="text-lg font-semibold mb-4 px-2 font-serif">Round-by-Round Scoring</h3>
           
-          <div className="rounded-lg overflow-hidden border border-gray-200">
-            <div className="grid grid-cols-7 gap-0 font-semibold bg-gray-800 text-white">
-              <div className="col-span-1 py-2 px-3 text-center border-r border-gray-700">RD</div>
-              <div className="col-span-2 py-2 px-3 text-center border-r border-gray-700">{fight.fighter1.name}</div>
-              <div className="col-span-2 py-2 px-3 text-center border-r border-gray-700">{fight.fighter2.name}</div>
-              <div className="col-span-1 py-2 px-3 text-center border-r border-gray-700">Swing</div>
-              <div className="col-span-1 py-2 px-3 text-center">Notes</div>
+          <div className="rounded-lg overflow-hidden border border-gray-300">
+            <div className="grid grid-cols-11 gap-0 font-semibold">
+              <div className="col-span-5 py-2 px-3 text-center border-r border-gray-300 bg-blue-800 text-white font-serif">{fight.fighter1.name}</div>
+              <div className="col-span-1 py-2 px-3 text-center border-r border-gray-300 bg-gray-200 font-serif">RD</div>
+              <div className="col-span-5 py-2 px-3 text-center bg-red-800 text-white font-serif">{fight.fighter2.name}</div>
             </div>
             
             {rounds.map((round, index) => (
               <div 
                 key={round.roundNumber} 
-                className={`grid grid-cols-7 gap-0 border-b items-center ${
-                  round.swingRound 
-                    ? 'bg-purple-50' 
-                    : (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')
+                className={`grid grid-cols-11 gap-0 border-b items-center ${
+                  index % 2 === 0 ? 'bg-cream' : 'bg-gray-50'
                 }`}
               >
-                <div className="col-span-1 p-3 text-center font-semibold border-r">{round.roundNumber}</div>
-                
-                <div className="col-span-2 p-3 text-center border-r">
+                {/* Fighter 1 Score */}
+                <div className="col-span-5 p-3 text-center border-r border-gray-300">
                   <select
                     value={round.fighter1Score}
                     onChange={(e) => handleRoundChange(round.roundNumber, "fighter1Score", parseInt(e.target.value))}
-                    className="w-20 h-10 text-center rounded-full font-medium border focus:outline-none"
+                    className="w-20 h-10 text-center rounded-md font-medium border border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none text-blue-800 font-serif font-bold"
                   >
                     {[10, 9, 8, 7, 6, 5].map((score) => (
                       <option key={score} value={score}>{score}</option>
@@ -173,23 +207,15 @@ export default function ScorecardForm({ fight, existingScorecard = null }) {
                   </select>
                 </div>
                 
-                <div className="col-span-2 p-3 text-center border-r">
-                  <select
-                    value={round.fighter2Score}
-                    onChange={(e) => handleRoundChange(round.roundNumber, "fighter2Score", parseInt(e.target.value))}
-                    className="w-20 h-10 text-center rounded-full font-medium border focus:outline-none"
-                  >
-                    {[10, 9, 8, 7, 6, 5].map((score) => (
-                      <option key={score} value={score}>{score}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div className="col-span-1 p-3 text-center border-r">
+                {/* Round Number and Swing Toggle */}
+                <div className="col-span-1 p-3 text-center border-r border-gray-300 flex flex-col items-center">
+                  <div className="font-semibold font-serif mb-1">
+                    {round.roundNumber.toString().padStart(2, '0')}
+                  </div>
                   <button 
                     type="button"
                     onClick={() => handleRoundChange(round.roundNumber, "swingRound", !round.swingRound)}
-                    className={`w-8 h-8 rounded-full border focus:outline-none ${
+                    className={`w-6 h-6 rounded-full border focus:outline-none ${
                       round.swingRound 
                         ? 'bg-purple-600 border-purple-700 text-white' 
                         : 'bg-white border-gray-300 text-gray-400 hover:bg-gray-100'
@@ -200,37 +226,84 @@ export default function ScorecardForm({ fight, existingScorecard = null }) {
                   </button>
                 </div>
                 
-                <div className="col-span-1 p-3">
-                  <input
-                    type="text"
-                    value={round.notes || ""}
-                    onChange={(e) => handleRoundChange(round.roundNumber, "notes", e.target.value)}
-                    placeholder="Notes"
-                    className="w-full p-1 border rounded text-sm focus:outline-none"
-                  />
+                {/* Fighter 2 Score */}
+                <div className="col-span-5 p-3 text-center">
+                  <select
+                    value={round.fighter2Score}
+                    onChange={(e) => handleRoundChange(round.roundNumber, "fighter2Score", parseInt(e.target.value))}
+                    className="w-20 h-10 text-center rounded-md font-medium border border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-300 focus:outline-none text-red-800 font-serif font-bold"
+                  >
+                    {[10, 9, 8, 7, 6, 5].map((score) => (
+                      <option key={score} value={score}>{score}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             ))}
           </div>
           
-          <div className="mt-2 text-sm text-gray-600 flex items-center px-2">
-            <div className="w-3 h-3 rounded-full bg-purple-600 mr-2"></div>
-            <span>Swing rounds are rounds that could have gone either way</span>
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            <div className="col-span-3 md:col-span-2">
+              <div className="text-sm text-gray-600 flex items-center">
+                <div className="w-3 h-3 rounded-full bg-purple-600 mr-2"></div>
+                <span className="font-serif">Swing rounds are rounds that could have gone either way</span>
+              </div>
+            </div>
+            <div className="col-span-3 md:col-span-1">
+              <label className="flex items-center justify-end">
+                <span className="mr-2 text-sm font-serif text-gray-600">Round Notes:</span>
+                <select 
+                  onChange={(e) => {
+                    const roundNumber = parseInt(e.target.value);
+                    if (roundNumber) {
+                      const noteInput = document.getElementById(`round-note-${roundNumber}`);
+                      if (noteInput) noteInput.focus();
+                    }
+                  }}
+                  className="border rounded p-1 text-sm font-serif"
+                  defaultValue=""
+                >
+                  <option value="" disabled>Select Round</option>
+                  {rounds.map(round => (
+                    <option key={round.roundNumber} value={round.roundNumber}>Round {round.roundNumber}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </div>
+
+          {/* Round Notes Section */}
+          <div className="mt-2 space-y-2">
+            {rounds.map((round) => (
+              <div key={`note-${round.roundNumber}`} className="rounded-lg border border-gray-200 p-2 bg-white">
+                <label className="flex items-center mb-1 font-serif text-sm font-semibold">
+                  <span>Round {round.roundNumber} Notes:</span>
+                </label>
+                <input
+                  id={`round-note-${round.roundNumber}`}
+                  type="text"
+                  value={round.notes || ""}
+                  onChange={(e) => handleRoundChange(round.roundNumber, "notes", e.target.value)}
+                  placeholder={`Notes for round ${round.roundNumber}...`}
+                  className="w-full p-2 border rounded text-sm focus:outline-none font-serif"
+                />
+              </div>
+            ))}
           </div>
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2 px-2">Scorecard Notes</label>
+          <label className="block text-gray-700 font-semibold mb-2 px-2 font-serif">Scorecard Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full p-3 border rounded-lg focus:outline-none"
+            className="w-full p-3 border rounded-lg focus:outline-none font-serif bg-white"
             rows="3"
             placeholder="Add your overall thoughts about the fight..."
           />
         </div>
 
-        <div className="mb-6 p-4 bg-gray-100 rounded-lg">
+        <div className="mb-6 p-4 bg-gray-100 rounded-lg border border-gray-300">
           <label className="flex items-center">
             <input
               type="checkbox"
@@ -238,21 +311,21 @@ export default function ScorecardForm({ fight, existingScorecard = null }) {
               onChange={(e) => setIsPublic(e.target.checked)}
               className="mr-2 h-5 w-5 rounded"
             />
-            <span className="font-medium">Make this scorecard public</span>
+            <span className="font-medium font-serif">Make this scorecard public</span>
           </label>
-          <p className="text-gray-500 text-sm mt-1 ml-7">
+          <p className="text-gray-500 text-sm mt-1 ml-7 font-serif">
             Public scorecards can be viewed by anyone. Private scorecards are only visible to you.
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200">
+          <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200 font-serif">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg border border-green-200">
+          <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg border border-green-200 font-serif">
             {success}
           </div>
         )}
@@ -261,7 +334,7 @@ export default function ScorecardForm({ fight, existingScorecard = null }) {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-5 py-2.5 bg-gray-200 text-gray-800 rounded-full font-medium hover:bg-gray-300 transition-colors"
+            className="px-5 py-2.5 bg-gray-200 text-gray-800 rounded-md font-medium hover:bg-gray-300 transition-colors font-serif"
           >
             Cancel
           </button>
@@ -269,9 +342,9 @@ export default function ScorecardForm({ fight, existingScorecard = null }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`px-6 py-2.5 bg-black text-white rounded-full font-medium shadow-sm ${
-              isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-gray-800 transition-all"
-            }`}
+            className={`px-6 py-2.5 bg-blue-800 text-white rounded-md font-medium ${
+              isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-700 transition-all"
+            } font-serif`}
           >
             {isSubmitting 
               ? "Saving..." 

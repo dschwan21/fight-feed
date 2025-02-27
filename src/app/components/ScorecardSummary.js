@@ -18,84 +18,101 @@ export default function ScorecardSummary({ scorecard }) {
   const fighter2Won = totalFighter2Score > totalFighter1Score;
   const isDraw = totalFighter1Score === totalFighter2Score;
 
+  // Function to format fighter names for display
+  const formatFighterName = (name) => {
+    if (!name) return { firstName: '', lastName: '' };
+    
+    const nameParts = name.split(' ');
+    if (nameParts.length <= 1) return { firstName: name, lastName: '' };
+    
+    const lastName = nameParts.pop();
+    const firstName = nameParts.join(' ');
+    
+    return { firstName, lastName };
+  };
+  
+  const fighter1Name = formatFighterName(fight.fighter1.name);
+  const fighter2Name = formatFighterName(fight.fighter2.name);
+
   return (
     <Link href={`/scorecard/${scorecard.id}`} className="block">
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-        {/* Card Header with User Info */}
-        <div className="bg-black text-white p-3 flex items-center justify-between">
-          <div className="flex items-center">
-            {user.avatarUrl ? (
-              <img 
-                src={user.avatarUrl} 
-                alt={user.username || 'User'} 
-                className="w-8 h-8 rounded-full mr-2" 
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-700 mr-2 flex items-center justify-center text-xs">
-                {user.username?.charAt(0) || 'U'}
+      <div className="bg-cream rounded-lg shadow-md overflow-hidden border-2 border-gray-500 hover:shadow-lg hover:border-gray-700 transition-all">
+        
+        <div className="flex">
+          {/* Fighter 1 Side - Blue */}
+          <div className="w-1/2 border-r-2 border-gray-500">
+            <div className="h-14 p-2 text-center border-b-2 border-blue-800 font-serif flex flex-col items-center justify-center">
+              <h3 className="font-bold text-blue-800 leading-tight">
+                {fighter1Name.firstName}
+                {fighter1Name.lastName && (
+                  <div>{fighter1Name.lastName}</div>
+                )}
+              </h3>
+            </div>
+            
+            <div className="p-5 text-center bg-cream flex flex-col items-center justify-center">
+              <div className="bg-blue-800 text-white w-20 h-20 rounded-md flex items-center justify-center">
+                <p className="text-4xl font-bold font-serif">{totalFighter1Score}</p>
               </div>
-            )}
-            <span className="font-medium">{user.username || 'Anonymous User'}</span>
+              {fighter1Won && (
+                <div className="mt-3 px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-serif">
+                  WINNER
+                </div>
+              )}
+            </div>
           </div>
-          <span className="text-xs text-gray-300">
-            {new Date(scorecard.createdAt).toLocaleDateString()}
-          </span>
+          
+          {/* Fighter 2 Side - Red */}
+          <div className="w-1/2">
+            <div className="h-14 p-2 text-center border-b border-red-800 font-serif flex flex-col items-center justify-center">
+              <h3 className="font-bold text-red-800 leading-tight">
+                {fighter2Name.firstName}
+                {fighter2Name.lastName && (
+                  <div>{fighter2Name.lastName}</div>
+                )}
+              </h3>
+            </div>
+            
+            <div className="p-5 text-center bg-cream flex flex-col items-center justify-center">
+              <div className="bg-red-800 text-white w-20 h-20 rounded-md flex items-center justify-center">
+                <p className="text-4xl font-bold font-serif">{totalFighter2Score}</p>
+              </div>
+              {fighter2Won && (
+                <div className="mt-3 px-3 py-1 bg-red-100 text-red-800 text-xs rounded-full font-serif">
+                  WINNER
+                </div>
+              )}
+            </div>
+          </div>
         </div>
         
-        {/* Score Display */}
-        <div className="p-4">
-          <div className="flex justify-between items-center">
-            <div className="text-center">
-              <p className="text-sm uppercase tracking-wider text-gray-600">{fight.fighter1.name}</p>
-              <p className="text-3xl font-bold">{totalFighter1Score}</p>
+        {/* Make sure score areas are the same height regardless of winner badge */}
+        <div className="flex">
+          <div className="w-1/2 h-4 border-r-2 border-gray-500"></div>
+          <div className="w-1/2 h-4"></div>
+        </div>
+        
+        {/* Card Footer */}
+        <div className="bg-gray-50 p-3 text-sm text-gray-600 flex items-center">
+          {user.avatarUrl ? (
+            <img 
+              src={user.avatarUrl} 
+              alt={user.username || 'User'} 
+              className="w-6 h-6 rounded-full mr-2 border border-gray-300" 
+            />
+          ) : (
+            <div className="w-6 h-6 rounded-full bg-gray-400 mr-2 flex items-center justify-center text-xs text-white">
+              {user.username?.charAt(0) || 'U'}
             </div>
-            
-            <div className="flex items-center px-2">
-              <span className={`font-bold ${isDraw ? 'text-yellow-700' : 'text-gray-400'}`}>
-                {isDraw ? "DRAW" : "-"}
-              </span>
-            </div>
-            
-            <div className="text-center">
-              <p className="text-sm uppercase tracking-wider text-gray-600">{fight.fighter2.name}</p>
-              <p className="text-3xl font-bold">{totalFighter2Score}</p>
-            </div>
-          </div>
-          
-          <div className="mt-3 text-center">
-            <div className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${
-              isDraw 
-                ? 'bg-yellow-100 text-yellow-800' 
-                : fighter1Won 
-                  ? 'bg-blue-100 text-blue-800' 
-                  : 'bg-red-100 text-red-800'
-            }`}>
-              {isDraw 
-                ? 'Draw' 
-                : fighter1Won 
-                  ? `${fight.fighter1.name} Wins` 
-                  : `${fight.fighter2.name} Wins`
-              }
-            </div>
-          </div>
-          
-          <div className="mt-3 flex justify-between items-center text-sm text-gray-500">
-            <div>
-              {scorecard.rounds.some(r => r.swingRound) && (
-                <span className="mr-2">
-                  <span className="text-yellow-500 font-bold">*</span> Swing rounds
-                </span>
-              )}
-            </div>
-            
-            <div>
-              {scorecard._count?.comments > 0 && (
-                <span>
-                  {scorecard._count.comments} {scorecard._count.comments === 1 ? 'comment' : 'comments'}
-                </span>
-              )}
-            </div>
-          </div>
+          )}
+          <span className="font-medium font-serif">{user.username || 'Anonymous User'}</span>
+          <span className="mx-2">•</span>
+          <span className="text-xs text-gray-500 font-serif">
+            {new Date(scorecard.createdAt).toLocaleDateString()}
+          </span>
+          {isDraw && (
+            <span className="ml-auto px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs font-serif">DRAW</span>
+          )}
         </div>
       </div>
     </Link>

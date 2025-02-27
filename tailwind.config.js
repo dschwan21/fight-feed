@@ -14,10 +14,12 @@ module.exports = {
         accent: "#C084FC", // Purple Accent
         textDark: "#1E293B", // Deep Gray-Blue
         textLight: "#E5E7EB", // Light Gray
+        cream: "#FAF5E9", // Vintage cream color for scorecards
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         retro: ['Courier New', 'monospace'],
+        serif: ['Georgia', 'Times New Roman', 'serif'], // Adding serif font for vintage look
       },
       borderRadius: {
         custom: "12px",
