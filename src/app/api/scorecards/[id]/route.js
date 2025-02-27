@@ -164,6 +164,7 @@ export async function PUT(request, { params }) {
             update: {
               fighter1Score: round.fighter1Score,
               fighter2Score: round.fighter2Score,
+              swingRound: round.swingRound === true,
               notes: round.notes
             },
             create: {
@@ -171,6 +172,7 @@ export async function PUT(request, { params }) {
               roundNumber: round.roundNumber,
               fighter1Score: round.fighter1Score,
               fighter2Score: round.fighter2Score,
+              swingRound: round.swingRound === true,
               notes: round.notes
             }
           });

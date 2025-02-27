@@ -161,27 +161,17 @@ export default function FightCard({ fight, detailed = false }) {
         {detailed && (
           <div className="mt-4">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-lg font-semibold">Community Scorecards</h3>
               <p className="text-sm text-gray-500">
-                {fight._count?.scorecards || 0} {fight._count?.scorecards === 1 ? 'Scorecard' : 'Scorecards'}
+                {fight._count?.scorecards || 0} {fight._count?.scorecards === 1 ? 'Scorecard' : 'Scorecards'} Submitted
               </p>
             </div>
             
-            <div className="flex space-x-2">
-              <button
-                onClick={handleCreateScorecard}
-                className="px-4 py-2 bg-primary text-white rounded-custom font-semibold hover:bg-opacity-90 transition"
-              >
-                Score This Fight
-              </button>
-              
-              <Link 
-                href={`/fight/${fight.id}`}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-custom font-semibold hover:bg-gray-200 transition"
-              >
-                View All Scorecards
-              </Link>
-            </div>
+            <button
+              onClick={handleCreateScorecard}
+              className="px-4 py-2 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition"
+            >
+              Score This Fight
+            </button>
           </div>
         )}
         

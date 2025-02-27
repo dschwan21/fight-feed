@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import FightCard from "@/app/components/FightCard";
-import ScorecardDisplay from "@/app/components/ScorecardDisplay";
+import ScorecardSummary from "@/app/components/ScorecardSummary";
 import Link from "next/link";
 
 async function getFight(id) {
@@ -13,6 +13,7 @@ async function getFight(id) {
         fighter2: true,
         scorecards: {
           where: { public: true },
+          orderBy: { createdAt: 'desc' },
           include: {
             user: {
               select: {
@@ -21,7 +22,9 @@ async function getFight(id) {
                 avatarUrl: true
               }
             },
-            rounds: true,
+            rounds: {
+              orderBy: { roundNumber: 'asc' }  // Order rounds
+            },
             _count: {
               select: { comments: true }
             }
@@ -51,6 +54,16 @@ async function getFight(id) {
         }
       }
     });
+
+    // Process scorecards to ensure all have complete data
+    if (fight && fight.scorecards) {
+      fight.scorecards = fight.scorecards.filter(scorecard => 
+        scorecard && 
+        scorecard.user && 
+        scorecard.rounds && 
+        scorecard.rounds.length > 0
+      );
+    }
 
     return fight;
   } catch (error) {
@@ -92,26 +105,41 @@ export default async function FightPage({ params }) {
           <h2 className="text-2xl font-bold">Community Scorecards</h2>
           <Link 
             href={`/fight/${fight.id}/score`}
-            className="px-4 py-2 bg-primary text-white rounded-custom font-semibold hover:bg-opacity-90 transition"
+            className="px-4 py-2 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition"
           >
             Score This Fight
           </Link>
         </div>
         
         {fight.scorecards.length === 0 ? (
-          <div className="bg-white p-6 rounded-custom shadow-md text-center">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
             <p className="text-lg text-gray-600 mb-4">No scorecards yet for this fight.</p>
             <p className="text-gray-500">Be the first to add your scorecard!</p>
           </div>
         ) : (
-          <div className="grid gap-6">
-            {fight.scorecards.map(scorecard => (
-              <ScorecardDisplay 
-                key={scorecard.id}
-                scorecard={scorecard}
-                showFightDetails={false}
-              />
-            ))}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {fight.scorecards.map(scorecard => {
+              // Make sure the scorecard has all necessary data before rendering
+              const hasRequiredData = 
+                scorecard && 
+                scorecard.user && 
+                scorecard.rounds?.length > 0 && 
+                fight && 
+                fight.fighter1 && 
+                fight.fighter2;
+                
+              if (!hasRequiredData) return null;
+              
+              return (
+                <ScorecardSummary 
+                  key={scorecard.id}
+                  scorecard={{
+                    ...scorecard,
+                    fight: scorecard.fight || fight  // Ensure fight data is available
+                  }}
+                />
+              );
+            })}
           </div>
         )}
       </div>

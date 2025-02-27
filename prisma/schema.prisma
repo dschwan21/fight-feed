@@ -100,6 +100,7 @@ model Round {
   roundNumber Int
   fighter1Score Int
   fighter2Score Int
+  swingRound  Boolean  @default(false)
   notes       String?
 
   @@unique([scorecardId, roundNumber])
