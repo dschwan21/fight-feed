@@ -35,6 +35,22 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
   const fighter2Won = totalFighter2Score > totalFighter1Score;
   const isDraw = totalFighter1Score === totalFighter2Score;
 
+  // Function to format fighter names for display
+  const formatFighterName = (name) => {
+    if (!name) return { firstName: '', lastName: '' };
+    
+    const nameParts = name.split(' ');
+    if (nameParts.length <= 1) return { firstName: name, lastName: '' };
+    
+    const lastName = nameParts.pop();
+    const firstName = nameParts.join(' ');
+    
+    return { firstName, lastName };
+  };
+  
+  const fighter1Name = formatFighterName(fight.fighter1.name);
+  const fighter2Name = formatFighterName(fight.fighter2.name);
+
   // Check if current user is the scorecard owner
   const isOwner = session?.user?.id === scorecard.userId;
 
@@ -116,54 +132,70 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
       {/* Boxers Header Cards */}
       <div className="flex justify-between">
         {/* Fighter 1 Header - Blue Side */}
-        <div className="w-1/2 border-r border-gray-300">
-          <div className="text-center p-2 bg-blue-800 text-white border-b border-gray-300 font-serif">
-            <h3 className="text-lg font-bold">{fight.fighter1.name}</h3>
+        <div className="w-1/2 border-r-2 border-gray-500">
+          <div className="h-14 p-2 text-center border-b-2 border-blue-800 font-serif flex flex-col items-center justify-center bg-cream">
+            <h3 className="font-bold text-blue-800 leading-tight">
+              {fighter1Name.firstName}
+              {fighter1Name.lastName && <div>{fighter1Name.lastName}</div>}
+            </h3>
           </div>
-          <div className="bg-blue-100 h-auto flex flex-col items-center justify-center p-4">
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-800 mb-3">
+          <div className="bg-cream flex flex-col items-center justify-center">
+            <div className="w-full border-b border-gray-300">
               {fight.fighter1.imageUrl ? (
                 <img 
                   src={fight.fighter1.imageUrl} 
                   alt={fight.fighter1.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-64 object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-blue-700 flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl font-serif">{fight.fighter1.name.charAt(0)}</span>
+                <div className="w-full h-64 flex items-center justify-center bg-cream border border-blue-800">
+                  <span className="text-blue-800 font-bold text-6xl font-serif">{fight.fighter1.name.charAt(0).toLowerCase()}</span>
                 </div>
               )}
             </div>
-            <div className="bg-blue-800 text-white rounded-lg px-6 py-2 font-serif text-center">
-              <span className="block text-sm uppercase mb-1">Total Score</span>
-              <span className="text-3xl font-bold">{totalFighter1Score}</span>
+            <div className="bg-blue-800 text-white w-full h-14 flex items-center justify-center">
+              <span className="text-5xl font-bold font-serif">{totalFighter1Score}</span>
             </div>
+            {fighter1Won && (
+              <div className="mt-2 mb-2 px-4 py-0 font-black text-black text-xl font-serif tracking-wide">
+                WINNER
+              </div>
+            )}
+            {!fighter1Won && <div className="py-1"></div>}
           </div>
         </div>
         
         {/* Fighter 2 Header - Red Side */}
         <div className="w-1/2">
-          <div className="text-center p-2 bg-red-800 text-white border-b border-gray-300 font-serif">
-            <h3 className="text-lg font-bold">{fight.fighter2.name}</h3>
+          <div className="h-14 p-2 text-center border-b-2 border-red-800 font-serif flex flex-col items-center justify-center bg-cream">
+            <h3 className="font-bold text-red-800 leading-tight">
+              {fighter2Name.firstName}
+              {fighter2Name.lastName && <div>{fighter2Name.lastName}</div>}
+            </h3>
           </div>
-          <div className="bg-red-100 h-auto flex flex-col items-center justify-center p-4">
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-red-800 mb-3">
+          <div className="bg-cream flex flex-col items-center justify-center">
+            <div className="w-full border-b border-gray-300">
               {fight.fighter2.imageUrl ? (
                 <img 
                   src={fight.fighter2.imageUrl} 
                   alt={fight.fighter2.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-64 object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-red-700 flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl font-serif">{fight.fighter2.name.charAt(0)}</span>
+                <div className="w-full h-64 flex items-center justify-center bg-cream border border-red-800">
+                  <span className="text-red-800 font-bold text-6xl font-serif">{fight.fighter2.name.charAt(0).toLowerCase()}</span>
                 </div>
               )}
             </div>
-            <div className="bg-red-800 text-white rounded-lg px-6 py-2 font-serif text-center">
-              <span className="block text-sm uppercase mb-1">Total Score</span>
-              <span className="text-3xl font-bold">{totalFighter2Score}</span>
+            <div className="bg-red-800 text-white w-full h-14 flex items-center justify-center">
+              <span className="text-5xl font-bold font-serif">{totalFighter2Score}</span>
             </div>
+            {fighter2Won && (
+              <div className="mt-2 mb-2 px-4 py-0 font-black text-black text-xl font-serif tracking-wide">
+                WINNER
+              </div>
+            )}
+            {!fighter2Won && <div className="py-1"></div>}
           </div>
         </div>
       </div>
