@@ -8,16 +8,19 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  username  String?    @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  avatarUrl String?
-  role      Role       @default(USER)
-  followers Follower[] @relation("UserFollowers")
-  following Follower[] @relation("UserFollowing")
-  profile   Profile?
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  username   String?     @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  avatarUrl  String?
+  role       Role        @default(USER)
+  followers  Follower[]  @relation("UserFollowers")
+  following  Follower[]  @relation("UserFollowing")
+  profile    Profile?
+  scorecards Scorecard[]
+  comments   Comment[]
+  fights     Fight[]     @relation("CreatedFights")
 
   @@map("User")
 }
@@ -38,8 +41,93 @@ model Follower {
   following   User @relation("UserFollowing", fields: [followingId], references: [id])
 }
 
+model Fighter {
+  id          Int     @id @default(autoincrement())
+  name        String
+  nickname    String?
+  nationality String?
+  record      String?
+  weightClass String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  fightsFighter1 Fight[] @relation("Fighter1")
+  fightsFighter2 Fight[] @relation("Fighter2")
+}
+
+model Fight {
+  id          Int         @id @default(autoincrement())
+  fighter1Id  Int
+  fighter2Id  Int
+  fighter1    Fighter     @relation("Fighter1", fields: [fighter1Id], references: [id])
+  fighter2    Fighter     @relation("Fighter2", fields: [fighter2Id], references: [id])
+  eventName   String
+  date        DateTime
+  venue       String?
+  location    String?
+  weightClass String?
+  numberOfRounds Int
+  result      FightResult?
+  winMethod   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  createdById Int
+  createdBy   User        @relation("CreatedFights", fields: [createdById], references: [id])
+  scorecards  Scorecard[]
+  comments    Comment[]
+
+  @@unique([fighter1Id, fighter2Id, date, eventName])
+}
+
+model Scorecard {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fightId   Int
+  fight     Fight    @relation(fields: [fightId], references: [id], onDelete: Cascade)
+  rounds    Round[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notes     String?
+  public    Boolean  @default(true)
+  comments  Comment[]
+}
+
+model Round {
+  id          Int      @id @default(autoincrement())
+  scorecardId Int
+  scorecard   Scorecard @relation(fields: [scorecardId], references: [id], onDelete: Cascade)
+  roundNumber Int
+  fighter1Score Int
+  fighter2Score Int
+  notes       String?
+
+  @@unique([scorecardId, roundNumber])
+}
+
+model Comment {
+  id          Int       @id @default(autoincrement())
+  content     String
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fightId     Int?
+  fight       Fight?    @relation(fields: [fightId], references: [id], onDelete: Cascade)
+  scorecardId Int?
+  scorecard   Scorecard? @relation(fields: [scorecardId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 enum Role {
   USER
   ADMIN
   MODERATOR
+}
+
+enum FightResult {
+  FIGHTER1_WIN
+  FIGHTER2_WIN
+  DRAW
+  NO_CONTEST
+  PENDING
 }
