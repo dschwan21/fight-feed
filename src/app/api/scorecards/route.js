@@ -155,6 +155,7 @@ export async function POST(request) {
           roundNumber: round.roundNumber,
           fighter1Score: round.fighter1Score,
           fighter2Score: round.fighter2Score,
+          swingRound: round.swingRound === true,
           notes: round.notes
         }))
       });

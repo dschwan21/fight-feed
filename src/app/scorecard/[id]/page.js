@@ -22,7 +22,15 @@ async function getScorecard(id) {
           }
         },
         rounds: {
-          orderBy: { roundNumber: 'asc' }
+          orderBy: { roundNumber: 'asc' },
+          select: {
+            id: true,
+            roundNumber: true,
+            fighter1Score: true,
+            fighter2Score: true,
+            notes: true,
+            swingRound: true
+          }
         },
         comments: {
           include: {
@@ -39,6 +47,14 @@ async function getScorecard(id) {
       }
     });
 
+    // Ensure swingRound is properly defined on each round (handle nulls)
+    if (scorecard && scorecard.rounds) {
+      scorecard.rounds = scorecard.rounds.map(round => ({
+        ...round,
+        swingRound: round.swingRound === true || round.swingRound === 'true'
+      }));
+    }
+    
     return scorecard;
   } catch (error) {
     console.error("Error fetching scorecard:", error);
@@ -79,7 +95,7 @@ export default async function ScorecardPage({ params }) {
       <ScorecardDisplay 
         scorecard={scorecard} 
         showFightDetails={true}
-        showActions={false} 
+        showActions={true} 
       />
       
       <div className="mt-8">
