@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import ProfileEditModal from '../components/ProfileEditModal';
 import ActivityFeed from '../components/ActivityFeed';
 import TabNavigation from '../components/TabNavigation';
+import UserScorecards from '../components/UserScorecards';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -196,8 +197,9 @@ export default function ProfilePage() {
         {activeTab === 'fightscores' && (
           <div>
             <h2 className="text-xl font-bold mb-4">Fight Score History</h2>
-            {/* Fight scores component would go here */}
-            <p className="text-gray-600">Your fight scoring history will appear here.</p>
+            <div className="mt-4">
+              <UserScorecards />
+            </div>
           </div>
         )}
         
