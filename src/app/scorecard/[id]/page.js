@@ -95,7 +95,7 @@ export default async function ScorecardPage({ params }) {
       <ScorecardDisplay 
         scorecard={scorecard} 
         showFightDetails={true}
-        showActions={false} 
+        showActions={true} 
       />
       
       <div className="mt-8">
