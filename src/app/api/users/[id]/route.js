@@ -19,14 +19,23 @@ export async function GET(req, { params }) {
   
       if (!user) {
         console.log("User not found in DB");
-        return new Response("User not found", { status: 404 });
+        return new Response(JSON.stringify({ error: "User not found" }), { 
+          status: 404,
+          headers: { 'Content-Type': 'application/json' }
+        });
       }
   
       console.log("User found:", user);
-      return new Response(JSON.stringify(user), { status: 200 });
+      return new Response(JSON.stringify(user), { 
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
     } catch (error) {
       console.error("Error fetching user:", error);
-      return new Response("Failed to fetch user", { status: 500 });
+      return new Response(JSON.stringify({ error: "Failed to fetch user" }), { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
   }
 
@@ -46,17 +55,33 @@ export async function PUT(req, { params }) {
 
         if (!session || !session.user) {
             console.error("❌ Unauthorized request: No valid session.");
-            return new Response(JSON.stringify({ error: "Unauthorized: No session found" }), { status: 401 });
+            return new Response(JSON.stringify({ error: "Unauthorized: No session found" }), { 
+                status: 401,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
         const { id } = params;
-        const { username, bio, location } = await req.json();
+        const body = await req.json();
+        const { username, bio, location } = body;
 
+        console.log("📝 Request body:", body);
         console.log("🔎 Comparing session user ID:", session.user.id, "with request ID:", Number(id));
 
         if (session.user.id !== Number(id)) {
             console.log("⛔ Unauthorized: User IDs do not match.");
-            return new Response(JSON.stringify({ error: "Forbidden: Cannot update another user's profile" }), { status: 403 });
+            return new Response(JSON.stringify({ error: "Forbidden: Cannot update another user's profile" }), { 
+                status: 403,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        // Verify that all required fields are present
+        if (username === undefined) {
+            return new Response(JSON.stringify({ error: "Username is required" }), { 
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
 
         const updatedUser = await prisma.user.update({
@@ -74,11 +99,17 @@ export async function PUT(req, { params }) {
         });
 
         console.log("✅ User updated successfully:", updatedUser);
-        return new Response(JSON.stringify(updatedUser), { status: 200 });
+        return new Response(JSON.stringify(updatedUser), { 
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
 
     } catch (error) {
         console.error("❌ Error updating user:", error);
-        return new Response(JSON.stringify({ error: "Failed to update user" }), { status: 500 });
+        return new Response(JSON.stringify({ error: "Failed to update user", details: error.message }), { 
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
 
@@ -87,9 +118,32 @@ export async function DELETE(req, { params }) {
   const { id } = params;
 
   try {
+    const session = await getServerSession(options);
+    
+    if (!session || !session.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized: No session found" }), { 
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Only allow users to delete their own account or admins to delete any account
+    if (session.user.id !== Number(id) && session.user.role !== 'ADMIN') {
+      return new Response(JSON.stringify({ error: "Forbidden: Cannot delete another user's account" }), { 
+        status: 403,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     await prisma.user.delete({ where: { id: Number(id) } });
-    return new Response("User deleted", { status: 200 });
+    return new Response(JSON.stringify({ success: true, message: "User deleted" }), { 
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error) {
-    return new Response("Failed to delete user", { status: 500 });
+    return new Response(JSON.stringify({ error: "Failed to delete user", details: error.message }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }

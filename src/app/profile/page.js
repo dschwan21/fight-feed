@@ -1,20 +1,25 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import ProfileEditModal from '../components/ProfileEditModal';
 import ActivityFeed from '../components/ActivityFeed';
 import TabNavigation from '../components/TabNavigation';
 
 export default function ProfilePage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   
-  // Mock user data - replace with actual data from your auth system
   const [userData, setUserData] = useState({
-    username: 'FightFan123',
-    bio: 'Passionate about boxing and MMA. Been following the sport for over 10 years.',
-    location: 'New York, NY',
-    avatar: '/images/default-avatar.png',
+    username: '',
+    bio: '',
+    location: '',
+    avatar: ''
   });
 
   const tabs = [
@@ -24,10 +29,115 @@ export default function ProfilePage() {
     { id: 'network', label: 'Followers/Following' },
   ];
 
-  const handleEditProfile = (updatedData) => {
-    setUserData({ ...userData, ...updatedData });
+  // Fetch user data when session is available
+  useEffect(() => {
+    async function fetchUserData() {
+      if (status === 'loading') return;
+      
+      if (!session) {
+        router.push('/api/auth/signin');
+        return;
+      }
+      
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        if (!session.user.id) {
+          throw new Error('User ID not found in session');
+        }
+        
+        const response = await fetch(`/api/users/${session.user.id}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+        
+        const user = await response.json();
+        
+        setUserData({
+          username: user.username || '',
+          bio: user.profile?.bio || '',
+          location: user.profile?.location || '',
+          avatar: user.avatarUrl || '/images/default-avatar.png',
+        });
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchUserData();
+  }, [session, status, router]);
+
+  const handleEditProfile = async (updatedData) => {
+    if (!session?.user?.id) {
+      setError('You must be logged in to update your profile');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/users/${session.user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: updatedData.username,
+          bio: updatedData.bio,
+          location: updatedData.location,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update profile');
+      }
+      
+      const updatedUser = await response.json();
+      
+      setUserData({
+        username: updatedUser.username || '',
+        bio: updatedUser.profile?.bio || '',
+        location: updatedUser.profile?.location || '',
+        avatar: updatedUser.avatarUrl || '/images/default-avatar.png',
+      });
+      
+      // Refresh the page to ensure session data is updated
+      router.refresh();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setError(error.message);
+    }
+    
     setIsEditModalOpen(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-red-100 p-4 rounded-lg text-red-700">
+          <p>Error: {error}</p>
+          <button 
+            onClick={() => router.refresh()}
+            className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -36,18 +146,20 @@ export default function ProfilePage() {
         <div className="flex flex-col md:flex-row items-center md:items-start">
           <div className="w-32 h-32 mb-4 md:mb-0 md:mr-6">
             <img 
-              src={userData.avatar} 
-              alt={`${userData.username}'s profile`} 
+              src={userData.avatar || '/images/default-avatar.png'} 
+              alt={`${userData.username || 'User'}'s profile`} 
               className="rounded-full w-full h-full object-cover border-4 border-gray-200"
             />
           </div>
           
           <div className="flex-1 text-center md:text-left">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-              <h1 className="text-2xl font-bold mb-2 md:mb-0">{userData.username}</h1>
+              <h1 className="text-2xl font-bold mb-2 md:mb-0">
+                {userData.username || 'New User'}
+              </h1>
               <button 
                 onClick={() => setIsEditModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+                className="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-custom transition-colors"
               >
                 Edit Profile
               </button>
@@ -60,7 +172,7 @@ export default function ProfilePage() {
               </p>
             )}
             
-            <p className="text-gray-800">{userData.bio}</p>
+            <p className="text-gray-800">{userData.bio || 'No bio yet'}</p>
           </div>
         </div>
       </div>
