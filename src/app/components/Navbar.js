@@ -18,10 +18,11 @@ export default function Navbar() {
 
         {/* 🌐 Desktop Navigation */}
         <div className="hidden md:flex space-x-8 font-semibold text-textDark">
+          <Link href="/" className="hover:text-primary transition">Home</Link>
+          <Link href="/profile" className="hover:text-primary transition">Profile</Link>
           <Link href="/scorecards" className="hover:text-primary transition">Scorecards</Link>
           <Link href="/events" className="hover:text-primary transition">Events</Link>
           <Link href="/community" className="hover:text-primary transition">Community</Link>
-          {session?.user && <Link href="/profile" className="hover:text-primary transition">Profile</Link>}
         </div>
 
         {/* 👤 User Options (Desktop) */}
@@ -51,12 +52,11 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden absolute top-16 left-0 w-full bg-background shadow-md border-b border-gray-300">
           <div className="flex flex-col items-center space-y-4 py-4 font-semibold text-textDark">
+            <Link href="/" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Home</Link>
+            <Link href="/profile" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Profile</Link>
             <Link href="/scorecards" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Scorecards</Link>
             <Link href="/events" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Events</Link>
             <Link href="/community" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Community</Link>
-            
-            {/* 👤 Profile Link (Mobile) */}
-            {session?.user && <Link href="/profile" className="hover:text-primary transition" onClick={() => setMenuOpen(false)}>Profile</Link>}
 
             {/* 👤 User Options (Mobile) */}
             {session?.user ? (
