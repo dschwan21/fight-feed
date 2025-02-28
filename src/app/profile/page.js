@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import ProfileEditModal from '../components/ProfileEditModal';
 import ActivityFeed from '../components/ActivityFeed';
 import TabNavigation from '../components/TabNavigation';
-import UserScorecards from '../components/UserScorecards';
+import ScorecardDisplay from '../components/ScorecardDisplay';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -15,6 +15,10 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userScorecards, setUserScorecards] = useState([]);
+  const [scorecardsLoaded, setScorecardsLoaded] = useState(false);
+  const [scorecardsLoading, setScorecardsLoading] = useState(false);
+  const [scorecardsError, setScorecardsError] = useState(null);
   
   const [userData, setUserData] = useState({
     username: '',
@@ -72,6 +76,35 @@ export default function ProfilePage() {
     
     fetchUserData();
   }, [session, status, router]);
+  
+  // Fetch user scorecards only once when session is available
+  useEffect(() => {
+    async function fetchUserScorecards() {
+      if (!session?.user?.id || scorecardsLoaded || scorecardsLoading) return;
+      
+      setScorecardsLoading(true);
+      setScorecardsError(null);
+      
+      try {
+        const response = await fetch(`/api/users/${session.user.id}/scorecards`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch scorecards');
+        }
+        
+        const data = await response.json();
+        setUserScorecards(data.scorecards);
+        setScorecardsLoaded(true);
+      } catch (error) {
+        console.error('Error fetching scorecards:', error);
+        setScorecardsError(error.message);
+      } finally {
+        setScorecardsLoading(false);
+      }
+    }
+    
+    fetchUserScorecards();
+  }, [session, scorecardsLoaded, scorecardsLoading]);
 
   const handleEditProfile = async (updatedData) => {
     if (!session?.user?.id) {
@@ -198,7 +231,31 @@ export default function ProfilePage() {
           <div>
             <h2 className="text-xl font-bold mb-4">Fight Score History</h2>
             <div className="mt-4">
-              <UserScorecards />
+              {scorecardsLoading ? (
+                <p className="text-gray-600 text-center py-8">Loading scorecards...</p>
+              ) : scorecardsError ? (
+                <div className="bg-red-50 p-4 rounded-lg text-red-600 my-4">
+                  <p>Error: {scorecardsError}</p>
+                </div>
+              ) : userScorecards.length === 0 ? (
+                <div className="bg-gray-50 p-8 rounded-lg text-center">
+                  <p className="text-gray-600 mb-4">You haven&apos;t created any scorecards yet.</p>
+                  <a href="/fights" className="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-colors">
+                    Score a Fight
+                  </a>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {userScorecards.map(scorecard => (
+                    <ScorecardDisplay 
+                      key={scorecard.id} 
+                      scorecard={scorecard} 
+                      showFightDetails={true} 
+                      showActions={true}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
