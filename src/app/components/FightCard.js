@@ -123,11 +123,11 @@ export default function FightCard({ fight, detailed = false }) {
             )}
           </div>
           
-          <div className="text-center relative">
-            <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center shadow-md">
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center shadow-md mb-2">
               <span className="text-white text-xl font-bold">VS</span>
             </div>
-            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded font-serif">
+            <div className="bg-black text-white text-sm px-3 py-1.5 rounded-full font-serif inline-block">
               {numberOfRounds} RDS
             </div>
           </div>
