@@ -100,8 +100,8 @@ export default function FightCard({ fight, detailed = false }) {
       
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="text-center w-5/12">
-            <div className="w-32 h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-primary shadow-md">
+          <div className="text-center w-[42%] sm:w-5/12">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-primary shadow-md">
               {fighter1.imageUrl ? (
                 <img 
                   src={fighter1.imageUrl} 
@@ -114,26 +114,26 @@ export default function FightCard({ fight, detailed = false }) {
                 </div>
               )}
             </div>
-            <h3 className="font-bold text-xl text-primary">{fighter1.name}</h3>
+            <h3 className="font-bold text-lg sm:text-xl text-primary">{fighter1.name}</h3>
             {fighter1.nickname && (
-              <p className="text-sm text-gray-600 font-serif italic">"{fighter1.nickname}"</p>
+              <p className="text-xs sm:text-sm text-gray-600 font-serif italic">"{fighter1.nickname}"</p>
             )}
             {fighter1.record && (
-              <p className="text-sm text-gray-600 mt-1 font-serif">{fighter1.record}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">{fighter1.record}</p>
             )}
           </div>
           
-          <div className="text-center">
-            <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center shadow-md mb-2">
-              <span className="text-white text-xl font-bold">VS</span>
+          <div className="text-center w-[16%] sm:w-auto">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-800 flex items-center justify-center shadow-md mb-2 mx-auto">
+              <span className="text-white text-base sm:text-xl font-bold">VS</span>
             </div>
-            <div className="bg-black text-white text-sm px-3 py-1.5 rounded-full font-serif inline-block">
+            <div className="bg-black text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-serif inline-block">
               {numberOfRounds} RDS
             </div>
           </div>
           
-          <div className="text-center w-5/12">
-            <div className="w-32 h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-secondary shadow-md">
+          <div className="text-center w-[42%] sm:w-5/12">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-secondary shadow-md">
               {fighter2.imageUrl ? (
                 <img 
                   src={fighter2.imageUrl} 
@@ -146,12 +146,12 @@ export default function FightCard({ fight, detailed = false }) {
                 </div>
               )}
             </div>
-            <h3 className="font-bold text-xl text-secondary">{fighter2.name}</h3>
+            <h3 className="font-bold text-lg sm:text-xl text-secondary">{fighter2.name}</h3>
             {fighter2.nickname && (
-              <p className="text-sm text-gray-600 font-serif italic">"{fighter2.nickname}"</p>
+              <p className="text-xs sm:text-sm text-gray-600 font-serif italic">"{fighter2.nickname}"</p>
             )}
             {fighter2.record && (
-              <p className="text-sm text-gray-600 mt-1 font-serif">{fighter2.record}</p>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">{fighter2.record}</p>
             )}
           </div>
         </div>

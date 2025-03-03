@@ -219,7 +219,7 @@ export default function ProfilePage() {
       />
 
       {/* Tab Content */}
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg shadow-md p-3 sm:p-6">
         {activeTab === 'overview' && (
           <div>
             <h2 className="text-xl font-bold mb-4">Overview</h2>
@@ -230,7 +230,7 @@ export default function ProfilePage() {
         {activeTab === 'fightscores' && (
           <div>
             <h2 className="text-xl font-bold mb-4">Fight Score History</h2>
-            <div className="mt-4">
+            <div className="mt-4 -mx-3 sm:mx-0">
               {scorecardsLoading ? (
                 <p className="text-gray-600 text-center py-8">Loading scorecards...</p>
               ) : scorecardsError ? (
