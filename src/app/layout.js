@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
           <SessionProvider>
             <AuthRedirectHandler />
             <Navbar />
-            <main className="flex justify-center items-start p-6 min-h-screen pt-20">
+            <main className="flex justify-center items-start px-1 sm:px-3 md:px-6 pt-16 sm:pt-20 min-h-screen">
               {children}
             </main>
           </SessionProvider>

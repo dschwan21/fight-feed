@@ -90,21 +90,21 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
   };
 
   return (
-    <div className="bg-cream rounded-lg shadow-md overflow-hidden border border-gray-300 my-6">
+    <div className="bg-cream rounded-lg shadow-md overflow-hidden border border-gray-300 my-4 sm:my-6 mx-0 w-full">
       {/* Scorecard Header */}
-      <div className="p-4 bg-cream">
+      <div className="p-3 sm:p-4 bg-cream">
         {showFightDetails && (
           <div className="mb-3 text-center">
-            <Link href={`/fight/${fight.id}`} className="text-xl font-bold tracking-wider uppercase hover:text-gray-700 transition-colors font-serif">
+            <Link href={`/fight/${fight.id}`} className="text-lg sm:text-xl font-bold tracking-wider uppercase hover:text-gray-700 transition-colors font-serif">
               {fight.fighter1.name} vs {fight.fighter2.name}
             </Link>
-            <p className="text-sm text-gray-600 mt-1 font-serif">{fight.eventName} • {new Date(fight.date).toLocaleDateString()}</p>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">{fight.eventName} • {new Date(fight.date).toLocaleDateString()}</p>
           </div>
         )}
         
         <div className="flex items-center justify-between mt-1">
           {!scorecard.public && (
-            <div className="px-2.5 py-1 bg-gray-200 text-gray-700 text-xs rounded-md font-medium">
+            <div className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-gray-200 text-gray-700 text-xs rounded-md font-medium">
               Private
             </div>
           )}
@@ -113,14 +113,14 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
             <div className="flex space-x-2">
               <Link 
                 href={`/scorecard/${scorecard.id}/edit`} 
-                className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-md text-sm font-medium transition-colors text-gray-800"
+                className="px-2 py-1 sm:px-3 sm:py-1.5 bg-gray-200 hover:bg-gray-300 rounded-md text-xs sm:text-sm font-medium transition-colors text-gray-800"
               >
                 Edit
               </Link>
               <button 
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="px-3 py-1.5 bg-red-200 hover:bg-red-300 text-red-800 rounded-md text-sm font-medium transition-colors"
+                className="px-2 py-1 sm:px-3 sm:py-1.5 bg-red-200 hover:bg-red-300 text-red-800 rounded-md text-xs sm:text-sm font-medium transition-colors"
               >
                 {isDeleting ? "Deleting..." : "Delete"}
               </button>
@@ -133,10 +133,10 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
       <div className="flex justify-between">
         {/* Fighter 1 Header - Blue Side */}
         <div className="w-1/2 border-r-2 border-gray-500">
-          <div className="h-14 p-2 text-center border-b-2 border-blue-800 font-serif flex flex-col items-center justify-center bg-cream">
-            <h3 className="font-bold text-blue-800 leading-tight">
+          <div className="h-10 sm:h-14 p-1 sm:p-2 text-center border-b-2 border-blue-800 font-serif flex flex-col items-center justify-center bg-cream">
+            <h3 className="font-bold text-blue-800 leading-tight text-xs sm:text-base">
               {fighter1Name.firstName}
-              {fighter1Name.lastName && <div>{fighter1Name.lastName}</div>}
+              {fighter1Name.lastName && <div className="text-xs sm:text-sm">{fighter1Name.lastName}</div>}
             </h3>
           </div>
           <div className="bg-cream flex flex-col items-center justify-center">
@@ -145,19 +145,19 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
                 <img 
                   src={fight.fighter1.imageUrl} 
                   alt={fight.fighter1.name}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-32 sm:h-64 object-cover"
                 />
               ) : (
-                <div className="w-full h-64 flex items-center justify-center bg-cream border border-blue-800">
-                  <span className="text-blue-800 font-bold text-6xl font-serif">{fight.fighter1.name.charAt(0).toLowerCase()}</span>
+                <div className="w-full h-32 sm:h-64 flex items-center justify-center bg-cream border border-blue-800">
+                  <span className="text-blue-800 font-bold text-4xl sm:text-6xl font-serif">{fight.fighter1.name.charAt(0).toLowerCase()}</span>
                 </div>
               )}
             </div>
-            <div className="bg-blue-800 text-white w-full h-14 flex items-center justify-center">
-              <span className="text-5xl font-bold font-serif">{totalFighter1Score}</span>
+            <div className="bg-blue-800 text-white w-full h-10 sm:h-14 flex items-center justify-center">
+              <span className="text-3xl sm:text-5xl font-bold font-serif">{totalFighter1Score}</span>
             </div>
             {fighter1Won && (
-              <div className="mt-2 mb-2 px-4 py-0 font-black text-black text-xl font-serif tracking-wide">
+              <div className="mt-1 sm:mt-2 mb-1 sm:mb-2 px-2 sm:px-4 py-0 font-black text-black text-sm sm:text-xl font-serif tracking-wide">
                 WINNER
               </div>
             )}
@@ -167,10 +167,10 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
         
         {/* Fighter 2 Header - Red Side */}
         <div className="w-1/2">
-          <div className="h-14 p-2 text-center border-b-2 border-red-800 font-serif flex flex-col items-center justify-center bg-cream">
-            <h3 className="font-bold text-red-800 leading-tight">
+          <div className="h-10 sm:h-14 p-1 sm:p-2 text-center border-b-2 border-red-800 font-serif flex flex-col items-center justify-center bg-cream">
+            <h3 className="font-bold text-red-800 leading-tight text-xs sm:text-base">
               {fighter2Name.firstName}
-              {fighter2Name.lastName && <div>{fighter2Name.lastName}</div>}
+              {fighter2Name.lastName && <div className="text-xs sm:text-sm">{fighter2Name.lastName}</div>}
             </h3>
           </div>
           <div className="bg-cream flex flex-col items-center justify-center">
@@ -179,19 +179,19 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
                 <img 
                   src={fight.fighter2.imageUrl} 
                   alt={fight.fighter2.name}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-32 sm:h-64 object-cover"
                 />
               ) : (
-                <div className="w-full h-64 flex items-center justify-center bg-cream border border-red-800">
-                  <span className="text-red-800 font-bold text-6xl font-serif">{fight.fighter2.name.charAt(0).toLowerCase()}</span>
+                <div className="w-full h-32 sm:h-64 flex items-center justify-center bg-cream border border-red-800">
+                  <span className="text-red-800 font-bold text-4xl sm:text-6xl font-serif">{fight.fighter2.name.charAt(0).toLowerCase()}</span>
                 </div>
               )}
             </div>
-            <div className="bg-red-800 text-white w-full h-14 flex items-center justify-center">
-              <span className="text-5xl font-bold font-serif">{totalFighter2Score}</span>
+            <div className="bg-red-800 text-white w-full h-10 sm:h-14 flex items-center justify-center">
+              <span className="text-3xl sm:text-5xl font-bold font-serif">{totalFighter2Score}</span>
             </div>
             {fighter2Won && (
-              <div className="mt-2 mb-2 px-4 py-0 font-black text-black text-xl font-serif tracking-wide">
+              <div className="mt-1 sm:mt-2 mb-1 sm:mb-2 px-2 sm:px-4 py-0 font-black text-black text-sm sm:text-xl font-serif tracking-wide">
                 WINNER
               </div>
             )}
@@ -201,24 +201,24 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
       </div>
 
       {/* Scorecard Body */}
-      <div className="p-5 bg-cream">        
+      <div className="p-2 sm:p-5 bg-cream">        
         {/* Round-by-Round Display */}
         <div className="overflow-hidden rounded-md border border-gray-300">
           {/* Column Headers */}
           <div className="flex border-b border-gray-300">
             {/* Fighter 1 Header */}
-            <div className="w-2/5 py-2 px-3 text-center bg-blue-800 text-white font-serif font-bold h-12 flex items-center justify-center border-r border-gray-300">
-              {fight.fighter1.name}
+            <div className="w-[37.5%] sm:w-2/5 py-1 sm:py-2 px-1 sm:px-3 text-center bg-blue-800 text-white font-serif font-bold h-8 sm:h-12 flex items-center justify-center border-r border-gray-300 text-xs sm:text-base">
+              {fight.fighter1.name.split(' ')[0]}
             </div>
             
             {/* Round Header */}
-            <div className="w-1/5 py-2 px-3 text-center bg-gray-200 font-serif font-bold h-12 flex items-center justify-center border-r border-gray-300">
+            <div className="w-[25%] sm:w-1/5 py-1 sm:py-2 px-0 sm:px-3 text-center bg-gray-200 font-serif font-bold h-8 sm:h-12 flex items-center justify-center border-r border-gray-300 text-xs sm:text-base">
               ROUND
             </div>
             
             {/* Fighter 2 Header */}
-            <div className="w-2/5 py-2 px-3 text-center bg-red-800 text-white font-serif font-bold h-12 flex items-center justify-center">
-              {fight.fighter2.name}
+            <div className="w-[37.5%] sm:w-2/5 py-1 sm:py-2 px-1 sm:px-3 text-center bg-red-800 text-white font-serif font-bold h-8 sm:h-12 flex items-center justify-center text-xs sm:text-base">
+              {fight.fighter2.name.split(' ')[0]}
             </div>
           </div>
           
@@ -233,25 +233,25 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
                 {/* Regular Round Row */}
                 <div className="flex border-b border-gray-300">
                   {/* Fighter 1 Score */}
-                  <div className="w-2/5 py-3 px-4 text-center font-serif text-blue-800 font-bold text-lg border-r border-gray-300 bg-cream h-14 flex items-center justify-center">
+                  <div className="w-[37.5%] sm:w-2/5 py-2 sm:py-3 px-2 sm:px-4 text-center font-serif text-blue-800 font-bold text-base sm:text-lg border-r border-gray-300 bg-cream h-10 sm:h-14 flex items-center justify-center">
                     {round.fighter1Score}
                   </div>
                   
                   {/* Round Number */}
                   <div 
-                    className={`w-1/5 py-3 px-2 text-center font-serif font-bold border-r border-gray-300 bg-gray-100 h-14 flex items-center justify-center ${hasNotes ? 'cursor-pointer hover:bg-gray-200' : ''}`}
+                    className={`w-[25%] sm:w-1/5 py-2 sm:py-3 px-0 sm:px-2 text-center font-serif font-bold border-r border-gray-300 bg-gray-100 h-10 sm:h-14 flex items-center justify-center text-xs sm:text-base ${hasNotes ? 'cursor-pointer hover:bg-gray-200' : ''}`}
                     onClick={() => hasNotes && toggleRoundNotes(round.roundNumber)}
                   >
                     <div className="flex items-center justify-center">
-                      <span>{round.roundNumber.toString().padStart(2, '0')}</span>
+                      <span>{round.roundNumber}</span>
                       {isSwingRound && (
-                        <div className="ml-2 w-3 h-3 rounded-full bg-purple-600" title="Swing round"></div>
+                        <div className="ml-1 sm:ml-2 w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-purple-600" title="Swing round"></div>
                       )}
                       {hasNotes && (
-                        <div className="ml-2 relative">
+                        <div className="ml-1 sm:ml-2 relative">
                           <svg 
                             xmlns="http://www.w3.org/2000/svg" 
-                            className={`h-4 w-4 text-gray-600 transition-transform ${isExpanded ? 'transform -rotate-180' : ''}`} 
+                            className={`h-3 w-3 sm:h-4 sm:w-4 text-gray-600 transition-transform ${isExpanded ? 'transform -rotate-180' : ''}`} 
                             fill="none" 
                             viewBox="0 0 24 24" 
                             stroke="currentColor"
@@ -264,7 +264,7 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
                   </div>
                   
                   {/* Fighter 2 Score */}
-                  <div className="w-2/5 py-3 px-4 text-center font-serif text-red-800 font-bold text-lg bg-cream h-14 flex items-center justify-center">
+                  <div className="w-[37.5%] sm:w-2/5 py-2 sm:py-3 px-2 sm:px-4 text-center font-serif text-red-800 font-bold text-base sm:text-lg bg-cream h-10 sm:h-14 flex items-center justify-center">
                     {round.fighter2Score}
                   </div>
                 </div>
@@ -272,9 +272,9 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
                 {/* Expanded Notes Row */}
                 {isExpanded && hasNotes && (
                   <div className="flex border-b border-gray-300 bg-gray-50">
-                    <div className="w-full py-3 px-4">
-                      <div className="bg-white p-3 rounded-md shadow-sm border border-gray-200">
-                        <p className="text-sm font-serif">{round.notes}</p>
+                    <div className="w-full py-2 sm:py-3 px-2 sm:px-4">
+                      <div className="bg-white p-2 sm:p-3 rounded-md shadow-sm border border-gray-200">
+                        <p className="text-xs sm:text-sm font-serif">{round.notes}</p>
                       </div>
                     </div>
                   </div>
@@ -285,62 +285,62 @@ export default function ScorecardDisplay({ scorecard, showFightDetails = false, 
         </div>
         
         {/* Final Score Summary */}
-        <div className="flex justify-between mt-6">
-          <div className="w-2/5">
-            <div className="flex justify-between items-center bg-blue-800 p-2 text-white">
-              <span className="font-serif font-bold text-xl">{totalFighter1Score}</span>
-              <span className="font-serif uppercase">TOTAL</span>
+        <div className="flex justify-between mt-4 sm:mt-6">
+          <div className="w-[37.5%] sm:w-2/5">
+            <div className="flex justify-between items-center bg-blue-800 p-1 sm:p-2 text-white">
+              <span className="font-serif font-bold text-base sm:text-xl">{totalFighter1Score}</span>
+              <span className="font-serif uppercase text-xs sm:text-base">TOTAL</span>
             </div>
           </div>
           
-          <div className="w-1/5">
+          <div className="w-[25%] sm:w-1/5">
             {/* Center spacer */}
           </div>
           
-          <div className="w-2/5">
-            <div className="flex justify-between items-center bg-red-800 p-2 text-white">
-              <span className="font-serif uppercase">TOTAL</span>
-              <span className="font-serif font-bold text-xl">{totalFighter2Score}</span>
+          <div className="w-[37.5%] sm:w-2/5">
+            <div className="flex justify-between items-center bg-red-800 p-1 sm:p-2 text-white">
+              <span className="font-serif uppercase text-xs sm:text-base">TOTAL</span>
+              <span className="font-serif font-bold text-base sm:text-xl">{totalFighter2Score}</span>
             </div>
           </div>
         </div>
         
         {/* Swing Round Legend moved here */}
         {rounds.some(round => round.swingRound === true || round.swingRound === 'true') && (
-          <div className="mt-4 text-sm text-gray-700 flex items-center">
-            <div className="w-4 h-4 rounded-full bg-purple-600 mr-2"></div>
+          <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-700 flex items-center">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-purple-600 mr-1 sm:mr-2"></div>
             <span className="font-serif">Swing round - could have gone either way</span>
           </div>
         )}
         
         {/* Scorecard Notes */}
         {scorecard.notes && (
-          <div className="mt-6">
-            <h3 className="text-lg font-serif font-bold mb-3 px-2">Notes</h3>
-            <div className="p-4 bg-gray-100 rounded-lg border border-gray-300">
-              <p className="text-gray-800 font-serif">{scorecard.notes}</p>
+          <div className="mt-4 sm:mt-6">
+            <h3 className="text-base sm:text-lg font-serif font-bold mb-2 sm:mb-3 px-2">Notes</h3>
+            <div className="p-2 sm:p-4 bg-gray-100 rounded-lg border border-gray-300">
+              <p className="text-xs sm:text-sm text-gray-800 font-serif">{scorecard.notes}</p>
             </div>
           </div>
         )}
 
         {/* Error Message */}
         {error && (
-          <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-lg border border-red-200 font-serif">
+          <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-red-50 text-red-600 rounded-lg border border-red-200 font-serif text-xs sm:text-sm">
             {error}
           </div>
         )}
         
         {/* Metadata and Actions */}
         {showActions && (
-          <div className="mt-6 flex justify-between items-center border-t border-gray-300 pt-4">
-            <div className="text-sm text-gray-700 font-serif">
+          <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center border-t border-gray-300 pt-3 sm:pt-4 gap-3 sm:gap-0">
+            <div className="text-xs sm:text-sm text-gray-700 font-serif">
               Scored by <span className="font-semibold">{user.username || 'Anonymous User'}</span> on {new Date(scorecard.createdAt).toLocaleDateString()}
             </div>
             <Link 
               href={`/scorecard/${scorecard.id}`} 
-              className="px-4 py-2 bg-gray-800 text-white rounded-full text-sm font-medium hover:bg-gray-700 font-serif"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-800 text-white rounded-full text-xs sm:text-sm font-medium hover:bg-gray-700 font-serif"
             >
-              {scorecard._count?.comments || 0} Comments • View Full Scorecard
+              {scorecard._count?.comments || 0} Comments • View Full
             </Link>
           </div>
         )}
