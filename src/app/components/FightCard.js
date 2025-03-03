@@ -44,6 +44,40 @@ export default function FightCard({ fight, detailed = false }) {
     return resultLabel;
   };
   
+  const getResultBadge = () => {
+    if (!result || result === "PENDING") return null;
+    
+    let badgeClass = "";
+    let badgeText = "";
+    
+    switch (result) {
+      case "FIGHTER1_WIN":
+        badgeClass = "bg-primary";
+        badgeText = "Fighter 1 Win";
+        break;
+      case "FIGHTER2_WIN":
+        badgeClass = "bg-secondary";
+        badgeText = "Fighter 2 Win";
+        break;
+      case "DRAW":
+        badgeClass = "bg-yellow-600";
+        badgeText = "Draw";
+        break;
+      case "NO_CONTEST":
+        badgeClass = "bg-gray-600";
+        badgeText = "No Contest";
+        break;
+      default:
+        return null;
+    }
+    
+    return (
+      <div className={`absolute top-4 right-4 ${badgeClass} text-white text-xs px-3 py-1 rounded-full font-serif uppercase tracking-wider`}>
+        {badgeText}
+      </div>
+    );
+  };
+  
   const handleCreateScorecard = () => {
     if (!session) {
       setError("You must be signed in to create a scorecard");
@@ -54,19 +88,20 @@ export default function FightCard({ fight, detailed = false }) {
   };
   
   return (
-    <div className="bg-white rounded-custom shadow-md overflow-hidden">
-      <div className="p-4 bg-background border-b">
-        <Link href={`/fight/${fight.id}`} className="text-xl font-bold text-primary hover:text-opacity-90">
+    <div className="bg-cream rounded-custom shadow-lg overflow-hidden border-2 border-gray-300 relative">
+      <div className="p-6 bg-background border-b-2 border-gray-300">
+        <Link href={`/fight/${fight.id}`} className="text-2xl font-bold text-textDark hover:text-primary transition">
           {fighter1.name} vs {fighter2.name}
         </Link>
-        <p className="text-gray-600 font-semibold mt-1">{eventName}</p>
-        <p className="text-sm text-gray-500">{formattedDate}</p>
+        <p className="text-lg font-serif mt-1">{eventName}</p>
+        <p className="text-sm text-gray-600 font-serif">{formattedDate}</p>
+        {getResultBadge()}
       </div>
       
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
           <div className="text-center w-5/12">
-            <div className="w-24 h-24 mx-auto bg-gray-200 rounded-full overflow-hidden mb-2">
+            <div className="w-32 h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-primary shadow-md">
               {fighter1.imageUrl ? (
                 <img 
                   src={fighter1.imageUrl} 
@@ -79,23 +114,26 @@ export default function FightCard({ fight, detailed = false }) {
                 </div>
               )}
             </div>
-            <h3 className="font-bold text-lg">{fighter1.name}</h3>
+            <h3 className="font-bold text-xl text-primary">{fighter1.name}</h3>
             {fighter1.nickname && (
-              <p className="text-sm text-gray-600">"{fighter1.nickname}"</p>
+              <p className="text-sm text-gray-600 font-serif italic">"{fighter1.nickname}"</p>
             )}
             {fighter1.record && (
-              <p className="text-sm text-gray-500">Record: {fighter1.record}</p>
+              <p className="text-sm text-gray-600 mt-1 font-serif">{fighter1.record}</p>
             )}
           </div>
           
           <div className="text-center">
-            <span className="inline-block px-3 py-2 bg-primary text-white rounded-lg font-semibold text-sm">
-              VS
-            </span>
+            <div className="w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center shadow-md mb-2">
+              <span className="text-white text-xl font-bold">VS</span>
+            </div>
+            <div className="bg-black text-white text-sm px-3 py-1.5 rounded-full font-serif inline-block">
+              {numberOfRounds} RDS
+            </div>
           </div>
           
           <div className="text-center w-5/12">
-            <div className="w-24 h-24 mx-auto bg-gray-200 rounded-full overflow-hidden mb-2">
+            <div className="w-32 h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-secondary shadow-md">
               {fighter2.imageUrl ? (
                 <img 
                   src={fighter2.imageUrl} 
@@ -108,67 +146,67 @@ export default function FightCard({ fight, detailed = false }) {
                 </div>
               )}
             </div>
-            <h3 className="font-bold text-lg">{fighter2.name}</h3>
+            <h3 className="font-bold text-xl text-secondary">{fighter2.name}</h3>
             {fighter2.nickname && (
-              <p className="text-sm text-gray-600">"{fighter2.nickname}"</p>
+              <p className="text-sm text-gray-600 font-serif italic">"{fighter2.nickname}"</p>
             )}
             {fighter2.record && (
-              <p className="text-sm text-gray-500">Record: {fighter2.record}</p>
+              <p className="text-sm text-gray-600 mt-1 font-serif">{fighter2.record}</p>
             )}
           </div>
         </div>
         
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">Date</p>
-              <p className="font-semibold">{formattedDate}</p>
-            </div>
-            
-            <div>
-              <p className="text-sm text-gray-600">Format</p>
-              <p className="font-semibold">{numberOfRounds} Rounds</p>
+        <div className="my-8 border-t-2 border-b-2 border-gray-300 py-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <p className="text-xs uppercase tracking-wider text-gray-500 font-serif">Date</p>
+              <p className="font-semibold font-serif">{formattedDate}</p>
             </div>
             
             {venue && (
-              <div>
-                <p className="text-sm text-gray-600">Venue</p>
-                <p className="font-semibold">{venue}</p>
+              <div className="text-center">
+                <p className="text-xs uppercase tracking-wider text-gray-500 font-serif">Venue</p>
+                <p className="font-semibold font-serif">{venue}</p>
               </div>
             )}
             
             {location && (
-              <div>
-                <p className="text-sm text-gray-600">Location</p>
-                <p className="font-semibold">{location}</p>
+              <div className="text-center">
+                <p className="text-xs uppercase tracking-wider text-gray-500 font-serif">Location</p>
+                <p className="font-semibold font-serif">{location}</p>
               </div>
             )}
             
-            <div>
-              <p className="text-sm text-gray-600">Result</p>
-              <p className="font-semibold">{getResultLabel()}</p>
-            </div>
+            {result && result !== "PENDING" && (
+              <div className="text-center">
+                <p className="text-xs uppercase tracking-wider text-gray-500 font-serif">Result</p>
+                <p className="font-semibold font-serif">{getResultLabel()}</p>
+              </div>
+            )}
             
             {fight.winMethod && result !== "PENDING" && result !== "DRAW" && result !== "NO_CONTEST" && (
-              <div>
-                <p className="text-sm text-gray-600">Method</p>
-                <p className="font-semibold">{fight.winMethod}</p>
+              <div className="text-center col-span-2">
+                <p className="text-xs uppercase tracking-wider text-gray-500 font-serif">Method</p>
+                <p className="font-semibold font-serif">{fight.winMethod}</p>
               </div>
             )}
           </div>
         </div>
         
         {detailed && (
-          <div className="mt-4">
-            <div className="flex justify-between items-center mb-3">
-              <p className="text-sm text-gray-500">
-                {fight._count?.scorecards || 0} {fight._count?.scorecards === 1 ? 'Scorecard' : 'Scorecards'} Submitted
+          <div className="flex justify-between items-center mt-6">
+            <div className="flex items-center">
+              <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center shadow-sm">
+                <span className="text-white text-lg font-bold">{fight._count?.scorecards || 0}</span>
+              </div>
+              <p className="ml-3 text-gray-700 font-serif">
+                {fight._count?.scorecards === 1 ? 'Scorecard' : 'Scorecards'} Submitted
               </p>
             </div>
             
             <button
               onClick={handleCreateScorecard}
-              className="px-4 py-2 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition"
+              className="px-6 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition shadow-md"
             >
               Score This Fight
             </button>
@@ -176,7 +214,7 @@ export default function FightCard({ fight, detailed = false }) {
         )}
         
         {error && (
-          <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">
+          <div className="mt-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 font-serif">
             {error}
           </div>
         )}
