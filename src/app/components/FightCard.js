@@ -194,7 +194,7 @@ export default function FightCard({ fight, detailed = false }) {
         </div>
         
         {detailed && (
-          <div className="flex justify-between items-center mt-6">
+          <div className="flex justify-start items-center mt-6">
             <div className="flex items-center">
               <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center shadow-sm">
                 <span className="text-white text-lg font-bold">{fight._count?.scorecards || 0}</span>
@@ -203,13 +203,6 @@ export default function FightCard({ fight, detailed = false }) {
                 {fight._count?.scorecards === 1 ? 'Scorecard' : 'Scorecards'} Submitted
               </p>
             </div>
-            
-            <button
-              onClick={handleCreateScorecard}
-              className="px-6 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition shadow-md"
-            >
-              Score This Fight
-            </button>
           </div>
         )}
         

@@ -160,16 +160,6 @@ export default async function FightPage({ params }) {
           </div>
         )}
         
-        {fight.scorecards.length > 0 && (
-          <div className="mt-8 text-center">
-            <Link 
-              href={`/fight/${fight.id}/score`}
-              className="inline-block px-6 py-3 bg-cream text-gray-800 rounded-full font-semibold hover:bg-gray-200 transition shadow-md border-2 border-gray-300"
-            >
-              Add Your Scorecard
-            </Link>
-          </div>
-        )}
       </div>
     </div>
   );
