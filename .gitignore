@@ -33,3 +33,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# BoxRec scraper files (private)
+/src/scripts/boxrec-scraper.js
+/src/scripts/scrape-top-fighters.js
+/src/scripts/run-scraper.js
+/src/scripts/README.md
