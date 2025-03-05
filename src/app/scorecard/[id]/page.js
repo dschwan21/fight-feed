@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import ScorecardDisplay from "@/app/components/ScorecardDisplay";
+import CommentSection from "@/app/components/CommentSection";
 import Link from "next/link";
 
 async function getScorecard(id) {
@@ -31,18 +32,6 @@ async function getScorecard(id) {
             notes: true,
             swingRound: true
           }
-        },
-        comments: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                username: true,
-                avatarUrl: true
-              }
-            }
-          },
-          orderBy: { createdAt: 'desc' }
         }
       }
     });
@@ -85,7 +74,7 @@ export default async function ScorecardPage({ params }) {
   }
   
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="max-w-4xl mx-auto py-6 sm:py-8 px-3 sm:px-4">
       <div className="mb-4">
         <Link href={`/fight/${scorecard.fightId}`} className="text-primary hover:underline">
           ← Back to Fight
@@ -99,14 +88,7 @@ export default async function ScorecardPage({ params }) {
       />
       
       <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Comments</h2>
-        
-        {/* Comments would go here - typically implemented with client component */}
-        <div className="bg-white p-6 rounded-custom shadow-md">
-          <p className="text-gray-600 text-center">
-            Comment functionality coming soon...
-          </p>
-        </div>
+        <CommentSection scorecardId={scorecard.id} />
       </div>
     </div>
   );

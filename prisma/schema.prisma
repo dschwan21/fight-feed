@@ -117,6 +117,11 @@ model Comment {
   scorecard   Scorecard? @relation(fields: [scorecardId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  
+  // Self-relation for nested comments (one level)
+  parentId    Int?
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("CommentReplies")
 }
 
 enum Role {
