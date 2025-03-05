@@ -1,7 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+
+// Cache for search results to reduce API calls
+const searchCache = new Map();
+const CACHE_EXPIRY_TIME = 5 * 60 * 1000; // 5 minutes
 
 export default function SearchBar({ placeholder = "Search...", onSearch, className = "" }) {
   const [query, setQuery] = useState('');
@@ -9,10 +13,13 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const searchRef = useRef(null);
+  const abortControllerRef = useRef(null);
   const router = useRouter();
+  const lastSearchedQuery = useRef('');
+  const debounceTimerRef = useRef(null);
 
+  // Close search results when clicking outside
   useEffect(() => {
-    // Close search results when clicking outside
     function handleClickOutside(event) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -25,42 +32,72 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
     };
   }, []);
 
+  // Cleanup function for aborted requests
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (query.length >= 2) {
-        performSearch();
-      } else {
-        setResults([]);
-        setIsOpen(false);
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
-    }, 300);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [query]);
-
-  const performSearch = async () => {
-    if (!query.trim()) return;
+  const performSearch = useCallback(async (searchQuery) => {
+    if (!searchQuery.trim() || searchQuery.length < 2) {
+      setResults([]);
+      setIsOpen(false);
+      return;
+    }
+    
+    // Don't repeat the same search
+    if (lastSearchedQuery.current === searchQuery) return;
+    lastSearchedQuery.current = searchQuery;
+    
+    // Check cache first
+    const cacheKey = `search_${searchQuery}`;
+    const cachedResult = searchCache.get(cacheKey);
+    
+    if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_EXPIRY_TIME) {
+      setResults(cachedResult.data);
+      setIsOpen(true);
+      return;
+    }
+    
+    // Cancel any ongoing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
+    const { signal } = abortControllerRef.current;
     
     setIsLoading(true);
     try {
-      // Fetch fighters
-      const fightersRes = await fetch(`/api/fighters?search=${encodeURIComponent(query)}&pageSize=5`);
-      const fightersData = await fightersRes.json();
+      // Use a single API endpoint to reduce multiple network requests
+      const searchRes = await fetch(
+        `/api/search?q=${encodeURIComponent(searchQuery)}&limit=5`,
+        { signal }
+      );
       
-      // Fetch users
-      const usersRes = await fetch(`/api/users?search=${encodeURIComponent(query)}&pageSize=5`);
-      const usersData = await usersRes.json();
+      if (!searchRes.ok) {
+        throw new Error(`Search request failed with status ${searchRes.status}`);
+      }
       
-      // Combine and format results
-      const combinedResults = [
-        ...fightersData.fighters.map(fighter => ({
+      const searchData = await searchRes.json();
+      
+      // Format the results
+      const formattedResults = [
+        ...(searchData.fighters || []).map(fighter => ({
           id: fighter.id,
           name: fighter.name,
           type: 'fighter',
           imageUrl: fighter.imageUrl,
           subtitle: fighter.record || fighter.weightClass
         })),
-        ...usersData.users.map(user => ({
+        ...(searchData.users || []).map(user => ({
           id: user.id,
           name: user.username,
           type: 'user',
@@ -69,13 +106,56 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
         }))
       ];
       
-      setResults(combinedResults);
+      // Store in cache
+      searchCache.set(cacheKey, {
+        data: formattedResults,
+        timestamp: Date.now()
+      });
+      
+      // Clean up old cache entries
+      setTimeout(() => {
+        for (const [key, value] of searchCache.entries()) {
+          if (Date.now() - value.timestamp > CACHE_EXPIRY_TIME) {
+            searchCache.delete(key);
+          }
+        }
+      }, 0);
+      
+      setResults(formattedResults);
       setIsOpen(true);
     } catch (error) {
-      console.error('Search error:', error);
+      if (error.name !== 'AbortError') {
+        console.error('Search error:', error);
+      }
     } finally {
-      setIsLoading(false);
+      if (!signal.aborted) {
+        setIsLoading(false);
+      }
     }
+  }, []);
+
+  // Debounced search
+  const debouncedSearch = useCallback((value) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    debounceTimerRef.current = setTimeout(() => {
+      performSearch(value);
+    }, 350); // 350ms debounce
+  }, [performSearch]);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    
+    if (value.length < 2) {
+      setResults([]);
+      setIsOpen(false);
+      return;
+    }
+    
+    debouncedSearch(value);
   };
 
   const handleResultClick = (result) => {
@@ -108,13 +188,15 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={handleInputChange}
             placeholder={placeholder}
             className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label={placeholder}
           />
           {isLoading && (
             <div className="absolute right-3 top-2.5">
-              <div className="animate-spin h-5 w-5 border-2 border-gray-500 rounded-full border-t-transparent"></div>
+              <div className="animate-spin h-5 w-5 border-2 border-gray-500 rounded-full border-t-transparent" 
+                   aria-hidden="true"></div>
             </div>
           )}
         </div>
@@ -122,18 +204,19 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
       
       {isOpen && results.length > 0 && (
         <div className="absolute z-50 mt-1 w-full bg-white shadow-lg rounded-lg max-h-96 overflow-y-auto">
-          <ul className="py-1">
+          <ul className="py-1" role="listbox">
             {results.map((result) => (
               <li 
                 key={`${result.type}-${result.id}`}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
                 onClick={() => handleResultClick(result)}
+                role="option"
               >
                 {result.imageUrl ? (
-                  <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden mr-3 flex-shrink-0">
                     <img 
                       src={result.imageUrl} 
-                      alt={result.name}
+                      alt=""
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.target.onerror = null;
@@ -141,18 +224,19 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
                           ? '/images/default-fighter.png' 
                           : '/images/default-avatar.png';
                       }}
+                      loading="lazy"
                     />
                   </div>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center flex-shrink-0">
                     <span className="text-gray-500 font-bold">
                       {result.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
-                <div>
-                  <div className="font-medium">{result.name}</div>
-                  <div className="text-sm text-gray-500">
+                <div className="min-w-0">
+                  <div className="font-medium truncate">{result.name}</div>
+                  <div className="text-sm text-gray-500 truncate">
                     {result.type === 'fighter' ? '👊 Fighter' : '👤 User'} • {result.subtitle}
                   </div>
                 </div>
@@ -164,6 +248,7 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
             <button 
               onClick={handleSubmit}
               className="text-sm text-blue-500 hover:text-blue-700"
+              type="button"
             >
               View all results for "{query}"
             </button>

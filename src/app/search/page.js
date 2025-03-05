@@ -20,19 +20,22 @@ export default function SearchPage() {
   }, [query, activeTab]);
 
   const performSearch = async () => {
+    if (!query) return;
+    
     setIsLoading(true);
     try {
-      // Fetch fighters
-      const fightersRes = await fetch(`/api/fighters?search=${encodeURIComponent(query)}`);
-      const fightersData = await fightersRes.json();
+      // Use the unified search endpoint
+      const searchRes = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
       
-      // Fetch users
-      const usersRes = await fetch(`/api/users?search=${encodeURIComponent(query)}`);
-      const usersData = await usersRes.json();
+      if (!searchRes.ok) {
+        throw new Error(`Search request failed with status ${searchRes.status}`);
+      }
+      
+      const searchData = await searchRes.json();
       
       setResults({
-        fighters: fightersData.fighters || [],
-        users: usersData.users || []
+        fighters: searchData.fighters || [],
+        users: searchData.users || []
       });
     } catch (error) {
       console.error('Search error:', error);

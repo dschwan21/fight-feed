@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import SearchBar from '../components/SearchBar';
 
@@ -27,10 +27,30 @@ export default function FightersPage() {
 
   useEffect(() => {
     fetchFighters();
+    
+    // Cleanup function to abort any pending requests when unmounting
+    return () => {
+      if (currentFetchRef.current) {
+        currentFetchRef.current.abort();
+      }
+    };
   }, [pagination.page, searchTerm, weightClassFilter]);
+
+  // Ref to track the current fetch request
+  const currentFetchRef = useRef(null);
 
   const fetchFighters = async () => {
     setIsLoading(true);
+    
+    // Cancel any ongoing request
+    if (currentFetchRef.current) {
+      currentFetchRef.current.abort();
+    }
+    
+    // Create new abort controller
+    currentFetchRef.current = new AbortController();
+    const { signal } = currentFetchRef.current;
+    
     try {
       const queryParams = new URLSearchParams({
         page: pagination.page,
@@ -45,7 +65,7 @@ export default function FightersPage() {
         queryParams.append('weightClass', weightClassFilter);
       }
       
-      const response = await fetch(`/api/fighters?${queryParams.toString()}`);
+      const response = await fetch(`/api/fighters?${queryParams.toString()}`, { signal });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch fighters: ${response.status}`);
@@ -55,10 +75,15 @@ export default function FightersPage() {
       setFighters(data.fighters || []);
       setPagination(data.pagination || pagination);
     } catch (err) {
-      console.error('Error fetching fighters:', err);
-      setError('Failed to load fighters. Please try again later.');
+      // Don't show errors for aborted requests
+      if (err.name !== 'AbortError') {
+        console.error('Error fetching fighters:', err);
+        setError('Failed to load fighters. Please try again later.');
+      }
     } finally {
-      setIsLoading(false);
+      if (!signal.aborted) {
+        setIsLoading(false);
+      }
     }
   };
 

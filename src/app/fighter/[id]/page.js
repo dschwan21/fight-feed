@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import TabNavigation from '../../components/TabNavigation';
@@ -15,14 +15,32 @@ export default function FighterPage() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('fights');
 
+  // Track active requests to allow cancellation
+  const abortControllerRef = useRef(null);
+  
   useEffect(() => {
     async function fetchFighterData() {
       setIsLoading(true);
       setError(null);
       
+      // Cancel any ongoing requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      
+      // Create new abort controller
+      abortControllerRef.current = new AbortController();
+      const { signal } = abortControllerRef.current;
+      
       try {
-        // Fetch fighter details
-        const fighterRes = await fetch(`/api/fighters/${fighterId}`);
+        // Fetch fighter data and fights in parallel
+        const [fighterRes, fightsRes] = await Promise.all([
+          // Fetch fighter details
+          fetch(`/api/fighters/${fighterId}`, { signal }),
+          
+          // Fetch all fights for this fighter
+          fetch(`/api/fights?fighterId=${fighterId}`, { signal })
+        ]);
         
         if (!fighterRes.ok) {
           throw new Error(`Failed to fetch fighter: ${fighterRes.status}`);
@@ -31,14 +49,12 @@ export default function FighterPage() {
         const fighterData = await fighterRes.json();
         setFighter(fighterData);
         
-        // Set recent fights from the fighter data
-        if (fighterData.recentFights) {
+        // Set recent fights from the fighter data if available
+        if (fighterData.recentFights && fighterData.recentFights.length > 0) {
           setFights(fighterData.recentFights);
         }
         
-        // Fetch all fights this fighter has been in
-        const fightsRes = await fetch(`/api/fights?fighterId=${fighterId}`);
-        
+        // Otherwise use the dedicated fights response if it's successful
         if (fightsRes.ok) {
           const fightsData = await fightsRes.json();
           if (fightsData.fights && fightsData.fights.length > 0) {
@@ -46,16 +62,27 @@ export default function FighterPage() {
           }
         }
       } catch (err) {
-        console.error('Error fetching fighter data:', err);
-        setError('Failed to load fighter data. Please try again later.');
+        if (err.name !== 'AbortError') {
+          console.error('Error fetching fighter data:', err);
+          setError('Failed to load fighter data. Please try again later.');
+        }
       } finally {
-        setIsLoading(false);
+        if (!signal.aborted) {
+          setIsLoading(false);
+        }
       }
     }
     
     if (fighterId) {
       fetchFighterData();
     }
+    
+    // Cleanup function to abort any pending requests when unmounting or when fighterId changes
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [fighterId]);
 
   // Parse fighter record into win/loss/draw counts
