@@ -74,7 +74,7 @@ export default async function ScorecardPage({ params }) {
   }
   
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="max-w-4xl mx-auto py-6 sm:py-8 px-3 sm:px-4">
       <div className="mb-4">
         <Link href={`/fight/${scorecard.fightId}`} className="text-primary hover:underline">
           ← Back to Fight

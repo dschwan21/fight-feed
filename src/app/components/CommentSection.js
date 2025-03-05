@@ -84,7 +84,7 @@ export default function CommentSection({ scorecardId }) {
   };
   
   if (error) return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+    <div className="bg-gray-50 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200">
       <div className="text-red-500 py-4 flex items-center justify-center">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -95,8 +95,8 @@ export default function CommentSection({ scorecardId }) {
   );
   
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-      <h2 className="text-xl font-bold mb-6 font-serif text-gray-800 flex items-center">
+    <div className="bg-gray-50 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200">
+      <h2 className="text-xl font-bold mb-4 sm:mb-6 font-serif text-gray-800 flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
         </svg>

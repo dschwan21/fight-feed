@@ -73,7 +73,7 @@ export default function CommentItem({
   };
   
   return (
-    <div className={`${isReply ? 'ml-6 pl-4 border-l border-gray-200 mt-3' : 'bg-white rounded-lg border border-gray-100 shadow-sm p-4'}`}>
+    <div className={`${isReply ? 'ml-3 sm:ml-6 pl-3 sm:pl-4 border-l border-gray-200 mt-3' : 'bg-white bg-opacity-70 rounded-lg border border-gray-200 shadow-sm p-3 sm:p-4'}`}>
       <div className="flex items-start">
         {comment.user.avatarUrl ? (
           <img 

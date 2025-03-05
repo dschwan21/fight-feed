@@ -77,7 +77,7 @@ export default function CommentForm({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={isReply ? "Write a reply..." : "Write a comment..."}
-              className={`w-full p-3 pr-16 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-300 text-gray-700 placeholder-gray-400 text-sm transition duration-200 ease-in-out shadow-sm ${isReply ? 'bg-gray-50' : 'bg-white'}`}
+              className={`w-full p-2.5 sm:p-3 pr-12 sm:pr-16 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-300 text-gray-700 placeholder-gray-400 text-sm transition duration-200 ease-in-out shadow-sm ${isReply ? 'bg-gray-100' : 'bg-white bg-opacity-90'}`}
               rows={isReply ? 2 : 3}
               required
             />
@@ -85,7 +85,7 @@ export default function CommentForm({
             <button
               type="submit"
               disabled={isSubmitting || !content.trim()}
-              className={`absolute right-2 bottom-2 rounded-md p-1.5 ${
+              className={`absolute right-1.5 sm:right-2 bottom-1.5 sm:bottom-2 rounded-md p-1.5 ${
                 isSubmitting || !content.trim() 
                   ? 'text-gray-300 cursor-not-allowed' 
                   : 'text-blue-600 hover:text-white hover:bg-blue-600'
