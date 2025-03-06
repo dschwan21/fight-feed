@@ -212,28 +212,34 @@ export default function SearchBar({ placeholder = "Search...", onSearch, classNa
                 onClick={() => handleResultClick(result)}
                 role="option"
               >
-                {result.imageUrl ? (
-                  <div className="w-10 h-10 rounded-full overflow-hidden mr-3 flex-shrink-0">
+                <div className="w-10 h-10 rounded-full overflow-hidden mr-3 flex-shrink-0">
+                  {result.imageUrl ? (
                     <img 
                       src={result.imageUrl} 
                       alt=""
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = result.type === 'fighter' 
-                          ? '/images/default-fighter.png' 
-                          : '/images/default-avatar.png';
+                        e.target.style.display = 'none';
+                        e.target.parentNode.classList.add('flex', 'items-center', 'justify-center');
+                        e.target.parentNode.classList.add(result.type === 'fighter' ? 'bg-gray-300' : 'bg-gray-200');
+                        
+                        // Create and append the initial letter element
+                        const initialEl = document.createElement('span');
+                        initialEl.className = 'text-gray-500 font-bold';
+                        initialEl.textContent = result.name.charAt(0).toUpperCase();
+                        e.target.parentNode.appendChild(initialEl);
                       }}
                       loading="lazy"
                     />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center flex-shrink-0">
-                    <span className="text-gray-500 font-bold">
-                      {result.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
+                  ) : (
+                    <div className={`w-full h-full ${result.type === 'fighter' ? 'bg-gray-300' : 'bg-gray-200'} flex items-center justify-center`}>
+                      <span className="text-gray-500 font-bold">
+                        {result.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <div className="min-w-0">
                   <div className="font-medium truncate">{result.name}</div>
                   <div className="text-sm text-gray-500 truncate">

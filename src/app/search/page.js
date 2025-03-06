@@ -96,15 +96,30 @@ export default function SearchPage() {
                   >
                     <div className="flex items-center">
                       <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
-                        <img 
-                          src={fighter.imageUrl || '/images/default-fighter.png'} 
-                          alt={fighter.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = '/images/default-fighter.png';
-                          }}
-                        />
+                        {fighter.imageUrl ? (
+                          <img 
+                            src={fighter.imageUrl} 
+                            alt={fighter.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.style.display = 'none';
+                              e.target.parentNode.classList.add('flex', 'items-center', 'justify-center', 'bg-gray-300');
+                              
+                              // Create and append the initial letter element
+                              const initialEl = document.createElement('span');
+                              initialEl.className = 'text-md font-bold text-gray-500';
+                              initialEl.textContent = fighter.name.charAt(0).toUpperCase();
+                              e.target.parentNode.appendChild(initialEl);
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                            <span className="text-md font-bold text-gray-500">
+                              {fighter.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">{fighter.name}</h3>
@@ -134,15 +149,30 @@ export default function SearchPage() {
                   >
                     <div className="flex items-center">
                       <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
-                        <img 
-                          src={user.avatarUrl || '/images/default-avatar.png'} 
-                          alt={user.username}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = '/images/default-avatar.png';
-                          }}
-                        />
+                        {user.avatarUrl ? (
+                          <img 
+                            src={user.avatarUrl} 
+                            alt={user.username}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.style.display = 'none';
+                              e.target.parentNode.classList.add('flex', 'items-center', 'justify-center', 'bg-gray-200');
+                              
+                              // Create and append the initial letter element
+                              const initialEl = document.createElement('span');
+                              initialEl.className = 'text-md font-bold text-gray-500';
+                              initialEl.textContent = user.username.charAt(0).toUpperCase();
+                              e.target.parentNode.appendChild(initialEl);
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                            <span className="text-md font-bold text-gray-500">
+                              {user.username.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">{user.username}</h3>

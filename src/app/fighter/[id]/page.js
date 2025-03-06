@@ -153,23 +153,32 @@ export default function FighterPage() {
         <div className="md:flex">
           {/* Fighter Image */}
           <div className="md:w-1/3 bg-gray-100 flex items-center justify-center p-6">
-            {fighter.imageUrl ? (
-              <img 
-                src={fighter.imageUrl} 
-                alt={fighter.name} 
-                className="w-48 h-48 object-cover rounded-full border-4 border-white shadow-lg"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/images/default-fighter.png';
-                }}
-              />
-            ) : (
-              <div className="w-48 h-48 rounded-full bg-gray-300 flex items-center justify-center border-4 border-white shadow-lg">
-                <span className="text-4xl font-bold text-gray-500">
-                  {fighter.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
+            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg">
+              {fighter.imageUrl ? (
+                <img 
+                  src={fighter.imageUrl} 
+                  alt={fighter.name} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null; 
+                    e.target.style.display = 'none';
+                    e.target.parentNode.classList.add('bg-gray-300', 'flex', 'items-center', 'justify-center');
+                    
+                    // Create and append the initial letter element
+                    const initialEl = document.createElement('span');
+                    initialEl.className = 'text-4xl font-bold text-gray-500';
+                    initialEl.textContent = fighter.name.charAt(0).toUpperCase();
+                    e.target.parentNode.appendChild(initialEl);
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                  <span className="text-4xl font-bold text-gray-500">
+                    {fighter.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
           
           {/* Fighter Info */}
