@@ -185,7 +185,7 @@ export default function FightersPage() {
                           <img 
                             src={fighter.imageUrl} 
                             alt={fighter.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                             onError={(e) => {
                               e.target.onerror = null;
                               e.target.style.display = 'none';

@@ -153,12 +153,12 @@ export default function FighterPage() {
         <div className="md:flex">
           {/* Fighter Image */}
           <div className="md:w-1/3 bg-gray-100 flex items-center justify-center p-6">
-            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg">
+            <div className="w-60 h-60 overflow-hidden border-4 border-white shadow-lg">
               {fighter.imageUrl ? (
                 <img 
                   src={fighter.imageUrl} 
                   alt={fighter.name} 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onError={(e) => {
                     e.target.onerror = null; 
                     e.target.style.display = 'none';
