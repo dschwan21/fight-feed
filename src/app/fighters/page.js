@@ -87,8 +87,7 @@ export default function FightersPage() {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const handleSearch = () => {
     // Reset to page 1 when searching
     setPagination({ ...pagination, page: 1 });
   };
@@ -113,7 +112,6 @@ export default function FightersPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           {/* Search Bar */}
           <div className="md:w-1/2">
-            <form onSubmit={handleSearch}>
               <SearchBar 
                 placeholder="Search fighters by name..."
                 onSearch={(result) => {
@@ -121,8 +119,8 @@ export default function FightersPage() {
                     window.location.href = `/fighter/${result.id}`;
                   }
                 }}
+                className="w-full"
               />
-            </form>
           </div>
           
           {/* Weight Class Filter */}
