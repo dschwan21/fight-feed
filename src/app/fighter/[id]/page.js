@@ -49,8 +49,14 @@ export default function FighterPage() {
         const fighterData = await fighterRes.json();
         setFighter(fighterData);
         
-        // Set recent fights from the fighter data if available
-        if (fighterData.recentFights && fighterData.recentFights.length > 0) {
+        // Use all fights from the fighter data if available
+        if (fighterData.allFights && fighterData.allFights.length > 0) {
+          console.log(`Setting ${fighterData.allFights.length} fights from allFights`);
+          setFights(fighterData.allFights);
+        } 
+        // Fall back to recentFights if no allFights
+        else if (fighterData.recentFights && fighterData.recentFights.length > 0) {
+          console.log(`Setting ${fighterData.recentFights.length} fights from recentFights`);
           setFights(fighterData.recentFights);
         }
         
@@ -58,6 +64,7 @@ export default function FighterPage() {
         if (fightsRes.ok) {
           const fightsData = await fightsRes.json();
           if (fightsData.fights && fightsData.fights.length > 0) {
+            console.log(`Setting ${fightsData.fights.length} fights from API response`);
             setFights(fightsData.fights);
           }
         }
@@ -89,12 +96,26 @@ export default function FighterPage() {
   const parseRecord = (record) => {
     if (!record) return { wins: 0, losses: 0, draws: 0 };
     
+    console.log("Parsing record:", record);
+    
+    // Try standard format 
     const matches = record.match(/(\d+)-(\d+)-(\d+)/);
     if (matches && matches.length === 4) {
       return {
         wins: parseInt(matches[1], 10),
         losses: parseInt(matches[2], 10),
         draws: parseInt(matches[3], 10)
+      };
+    }
+    
+    // Try to extract numbers from non-standard formats
+    // Get first 3 numbers found in string
+    const allNumbers = record.match(/\d+/g);
+    if (allNumbers && allNumbers.length >= 3) {
+      return {
+        wins: parseInt(allNumbers[0], 10),
+        losses: parseInt(allNumbers[1], 10),
+        draws: parseInt(allNumbers[2], 10)
       };
     }
     

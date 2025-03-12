@@ -12,14 +12,31 @@ export async function GET(request) {
     const page = parseInt(searchParams.get('page') || '1');
     const skip = (page - 1) * limit;
 
+    // Get fighter ID filter if provided
+    const fighterId = searchParams.get('fighterId');
+    
     // Build search filters
-    const where = query ? {
+    let where = query ? {
       OR: [
         { eventName: { contains: query, mode: 'insensitive' } },
         { fighter1: { name: { contains: query, mode: 'insensitive' } } },
         { fighter2: { name: { contains: query, mode: 'insensitive' } } },
       ]
     } : {};
+    
+    // Add fighter ID filter if provided
+    if (fighterId) {
+      const fighterIdInt = parseInt(fighterId);
+      if (!isNaN(fighterIdInt)) {
+        where = {
+          ...where,
+          OR: [
+            { fighter1Id: fighterIdInt },
+            { fighter2Id: fighterIdInt }
+          ]
+        };
+      }
+    }
 
     // Fetch fights with pagination
     const fights = await prisma.fight.findMany({
@@ -50,8 +67,9 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('Error fetching fights:', error);
+    console.error('Search params:', Object.fromEntries(searchParams.entries()));
     return NextResponse.json(
-      { error: 'Failed to fetch fights' },
+      { error: 'Failed to fetch fights', details: error.message },
       { status: 500 }
     );
   }
