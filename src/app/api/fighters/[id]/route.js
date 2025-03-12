@@ -18,16 +18,14 @@ export async function GET(request, { params }) {
     const fighter = await prisma.fighter.findUnique({
       where: { id },
       include: {
-        // Include fighter's recent fights
+        // Include all of fighter's fights
         fightsFighter1: {
-          take: 5,
           orderBy: { date: 'desc' },
           include: {
             fighter2: true
           }
         },
         fightsFighter2: {
-          take: 5,
           orderBy: { date: 'desc' },
           include: {
             fighter1: true
@@ -53,15 +51,35 @@ export async function GET(request, { params }) {
         ...fight,
         isFighter1: false
       }))
-    ].sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5); // Take the 5 most recent fights
+    ].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // Calculate fighter's record from fight history
+    let wins = 0, losses = 0, draws = 0;
+    
+    allFights.forEach(fight => {
+      const isFighter1 = fight.fighter1Id === id;
+      
+      if (fight.result === 'FIGHTER1_WIN') {
+        isFighter1 ? wins++ : losses++;
+      } else if (fight.result === 'FIGHTER2_WIN') {
+        isFighter1 ? losses++ : wins++;
+      } else if (fight.result === 'DRAW') {
+        draws++;
+      }
+      // Ignore NO_CONTEST and PENDING
+    });
+    
+    // Create calculated record string
+    const calculatedRecord = `${wins}-${losses}-${draws}`;
     
     // Format the response
     const response = {
       ...fighter,
       fightsFighter1: undefined,
       fightsFighter2: undefined,
-      recentFights: allFights
+      recentFights: allFights.slice(0, 5), // Still return 5 most recent for summary display
+      allFights: allFights, // Return all fights for the complete history
+      calculatedRecord // Add the calculated record
     };
     
     return NextResponse.json(response);

@@ -455,9 +455,10 @@ async function extractFighterDetails(page, profileUrl) {
     
     // Debugging: take a screenshot of the page
     await page.screenshot({ path: 'fighter-page-full.png', fullPage: true });
-    
-    // Find the fight history table
-    const { fightHistory, opponentLinks } = await page.evaluate(() => {
+
+    // Function to extract fights from the current page
+    const extractFightsFromPage = async () => {
+      return page.evaluate(() => {
       // Various selectors to find the bout table
       let boutsTable = null;
       
@@ -526,9 +527,13 @@ async function extractFighterDetails(page, profileUrl) {
       const fightHistory = [];
       const opponentLinks = [];
       
+      console.log(`Found ${rows.length} total rows in fight table`);
+      
       // Skip header row if it exists
       const startIndex = rows[0] && rows[0].querySelector('th') ? 1 : 0;
       
+      // Process all rows, no limit
+      console.log(`Processing rows from ${startIndex} to ${rows.length}`);
       for (let i = startIndex; i < rows.length; i++) {
         const row = rows[i];
         
@@ -701,8 +706,73 @@ async function extractFighterDetails(page, profileUrl) {
         )
       };
     });
+    // First extraction
+    let results = await extractFightsFromPage();
+    let allFights = [...results.fightHistory];
+    let allOpponents = [...results.opponentLinks];
     
-    console.log(`Extracted ${fightHistory.length} fights and ${opponentLinks.length} unique opponent links`);
+    // Check for pagination
+    const hasPagination = await page.evaluate(() => {
+      const pagination = document.querySelector('.pagination, .pagerCtls');
+      const nextPageLink = pagination && pagination.querySelector('a[href*="page="]:not(.active), a.next, a[rel="next"]');
+      return !!nextPageLink;
+    });
+    
+    // If there's pagination, try to extract fights from all pages
+    if (hasPagination) {
+      console.log('Found pagination, attempting to extract fights from all pages');
+      
+      let currentPage = 1;
+      const maxPages = 10; // Limit to prevent infinite loops
+      
+      while (currentPage < maxPages) {
+        // Try to click the next page button
+        const nextPageClicked = await page.evaluate(() => {
+          const pagination = document.querySelector('.pagination, .pagerCtls');
+          const nextPageLink = pagination && pagination.querySelector('a[href*="page="]:not(.active), a.next, a[rel="next"]');
+          
+          if (nextPageLink) {
+            nextPageLink.click();
+            return true;
+          }
+          return false;
+        });
+        
+        if (!nextPageClicked) {
+          console.log('No more pages to extract');
+          break;
+        }
+        
+        // Wait for the page to load
+        await page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {
+          console.log('Navigation timeout, continuing anyway');
+        });
+        
+        // Check if we need to log in again
+        await ensureLoggedIn(page);
+        
+        // Extract fights from this page
+        console.log(`Extracting fights from page ${currentPage + 1}`);
+        const pageResults = await extractFightsFromPage();
+        
+        // Add new fights and opponents
+        allFights.push(...pageResults.fightHistory);
+        
+        // Add new opponents that aren't already in the list
+        for (const opponent of pageResults.opponentLinks) {
+          if (!allOpponents.some(o => o.url === opponent.url)) {
+            allOpponents.push(opponent);
+          }
+        }
+        
+        currentPage++;
+        
+        // Add a short delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+    
+    console.log(`Extracted ${allFights.length} total fights and ${allOpponents.length} unique opponent links`);
     
     return {
       name,
@@ -711,8 +781,8 @@ async function extractFighterDetails(page, profileUrl) {
       imageUrl,
       nationality,
       nickname,
-      fightHistory,
-      opponentLinks
+      fightHistory: allFights,
+      opponentLinks: allOpponents
     };
   } catch (error) {
     console.error(`Error extracting fighter details from ${profileUrl}:`, error);
