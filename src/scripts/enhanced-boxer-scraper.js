@@ -421,7 +421,13 @@ async function extractFighterDetails(page, profileUrl) {
       nickname = await page.evaluate(() => {
         // Look for nickname elements
         const nicknameEl = document.querySelector('.nickname, .alias');
-        if (nicknameEl) return nicknameEl.textContent.trim();
+        if (nicknameEl) {
+          const text = nicknameEl.textContent.trim();
+          // Filter out invalid nicknames (URLs, paths, etc.)
+          if (text && !text.includes('/') && !text.includes('http') && text.length < 50) {
+            return text;
+          }
+        }
         
         // Look for text in quotes which is often a nickname
         const quotedTexts = [];
@@ -439,13 +445,23 @@ async function extractFighterDetails(page, profileUrl) {
         
         if (quotedTexts.length > 0) {
           // Remove quotes and return first match
-          return quotedTexts[0].replace(/"/g, '');
+          const firstQuoted = quotedTexts[0].replace(/"/g, '');
+          // Verify it's not a URL or path
+          if (!firstQuoted.includes('/') && !firstQuoted.includes('http') && firstQuoted.length < 50) {
+            return firstQuoted;
+          }
         }
         
         return null;
       });
       
       console.log(`Extracted fighter nickname: ${nickname}`);
+      
+      // Additional filter for invalid nicknames outside of page.evaluate
+      if (nickname && (nickname.includes('/') || nickname.includes('http') || nickname.length > 50)) {
+        console.log(`Invalid nickname detected, ignoring: ${nickname}`);
+        nickname = null;
+      }
     } catch (e) {
       console.error('Error extracting fighter nickname:', e);
     }
