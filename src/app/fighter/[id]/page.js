@@ -98,6 +98,19 @@ export default function FighterPage() {
     
     console.log("Parsing record:", record);
     
+    // If we have a calculated record from the API, use that preferentially
+    if (fighter && fighter.calculatedRecord) {
+      console.log("Using calculated record:", fighter.calculatedRecord);
+      const calcMatches = fighter.calculatedRecord.match(/(\d+)-(\d+)-(\d+)/);
+      if (calcMatches && calcMatches.length === 4) {
+        return {
+          wins: parseInt(calcMatches[1], 10),
+          losses: parseInt(calcMatches[2], 10),
+          draws: parseInt(calcMatches[3], 10)
+        };
+      }
+    }
+    
     // Try standard format 
     const matches = record.match(/(\d+)-(\d+)-(\d+)/);
     if (matches && matches.length === 4) {
@@ -205,7 +218,7 @@ export default function FighterPage() {
           {/* Fighter Info */}
           <div className="md:w-2/3 p-6">
             <h1 className="text-3xl font-bold mb-2">{fighter.name}</h1>
-            {fighter.nickname && (
+            {fighter.nickname && !fighter.nickname.includes('/en/') && !fighter.nickname.includes('http') && (
               <p className="text-gray-600 italic mb-4">"{fighter.nickname}"</p>
             )}
             
