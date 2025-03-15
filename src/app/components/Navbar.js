@@ -36,27 +36,6 @@ export default function Navbar() {
         {/* 👤 User Options (Desktop) */}
         {session?.user ? (
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              href={`/profile/${session.user.id}`}
-              className="flex items-center space-x-2"
-            >
-              <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
-                {session.user.image ? (
-                  <img 
-                    src={session.user.image} 
-                    alt={session.user.name || 'User'} 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500 font-bold">
-                    {(session.user.name || 'U').charAt(0).toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <span className="font-medium truncate max-w-[100px]">
-                {session.user.name}
-              </span>
-            </Link>
             <button
               onClick={() => signOut()}
               className="bg-primary text-white px-4 py-1.5 rounded-custom font-semibold hover:bg-opacity-90 transition text-sm"
@@ -97,26 +76,6 @@ export default function Navbar() {
             {/* 👤 User Options (Mobile) */}
             {session?.user ? (
               <>
-                <Link 
-                  href={`/profile/${session.user.id}`} 
-                  className="flex items-center space-x-2"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
-                    {session.user.image ? (
-                      <img 
-                        src={session.user.image} 
-                        alt={session.user.name || 'User'} 
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 font-bold">
-                        {(session.user.name || 'U').charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <span>{session.user.name}</span>
-                </Link>
                 <button 
                   onClick={() => {
                     signOut();
