@@ -99,14 +99,14 @@ export default function FightCard({ fight, detailed = false }) {
       </div>
       
       <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <div className="text-center w-[42%] sm:w-5/12">
-            <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-primary shadow-md">
+        <div className="flex justify-between items-start mb-6">
+          <div className="text-center w-[42%] sm:w-5/12 flex flex-col items-center">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-primary shadow-md flex items-center justify-center">
               {fighter1.imageUrl ? (
                 <img 
                   src={fighter1.imageUrl} 
                   alt={fighter1.name} 
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-contain" 
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -114,17 +114,19 @@ export default function FightCard({ fight, detailed = false }) {
                 </div>
               )}
             </div>
-            <h3 className="font-bold text-lg sm:text-xl text-primary">{fighter1.name}</h3>
-            {fighter1.nickname && (
-              <p className="text-xs sm:text-sm text-gray-600 font-serif italic">"{fighter1.nickname}"</p>
-            )}
-            {fighter1.record && (
-              <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">{fighter1.record}</p>
-            )}
+            <div className="min-h-[80px] flex flex-col items-center">
+              <h3 className="font-bold text-lg sm:text-xl text-primary">{fighter1.name}</h3>
+              {fighter1.nickname && (
+                <p className="text-xs sm:text-sm text-gray-600 font-serif italic">&quot;{fighter1.nickname}&quot;</p>
+              )}
+              {fighter1.record && (
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">{fighter1.record}</p>
+              )}
+            </div>
           </div>
           
-          <div className="text-center w-[16%] sm:w-auto">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-800 flex items-center justify-center shadow-md mb-2 mx-auto">
+          <div className="text-center w-[16%] sm:w-auto flex flex-col items-center justify-start">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-800 flex items-center justify-center shadow-md mb-2">
               <span className="text-white text-base sm:text-xl font-bold">VS</span>
             </div>
             <div className="bg-black text-white text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-serif inline-block">
@@ -132,13 +134,13 @@ export default function FightCard({ fight, detailed = false }) {
             </div>
           </div>
           
-          <div className="text-center w-[42%] sm:w-5/12">
-            <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-secondary shadow-md">
+          <div className="text-center w-[42%] sm:w-5/12 flex flex-col items-center">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-200 rounded-full overflow-hidden mb-3 border-4 border-secondary shadow-md flex items-center justify-center">
               {fighter2.imageUrl ? (
                 <img 
                   src={fighter2.imageUrl} 
                   alt={fighter2.name} 
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-contain" 
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -146,13 +148,15 @@ export default function FightCard({ fight, detailed = false }) {
                 </div>
               )}
             </div>
-            <h3 className="font-bold text-lg sm:text-xl text-secondary">{fighter2.name}</h3>
-            {fighter2.nickname && (
-              <p className="text-xs sm:text-sm text-gray-600 font-serif italic">"{fighter2.nickname}"</p>
-            )}
-            {fighter2.record && (
-              <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">{fighter2.record}</p>
-            )}
+            <div className="min-h-[80px] flex flex-col items-center">
+              <h3 className="font-bold text-lg sm:text-xl text-secondary">{fighter2.name}</h3>
+              {fighter2.nickname && (
+                <p className="text-xs sm:text-sm text-gray-600 font-serif italic">&quot;{fighter2.nickname}&quot;</p>
+              )}
+              {fighter2.record && (
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 font-serif">{fighter2.record}</p>
+              )}
+            </div>
           </div>
         </div>
         
